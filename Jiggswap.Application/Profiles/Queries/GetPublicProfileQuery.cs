@@ -1,0 +1,116 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Dapper;
+using Jiggswap.Application.Common;
+using Jiggswap.Application.Common.Interfaces;
+using Jiggswap.Application.Profiles.Dtos;
+using MediatR;
+
+namespace Jiggswap.Application.Profiles.Queries
+{
+    public class PublicProfileResult
+    {
+        public string Username { get; set; }
+
+        public string DisplayName { get; set; }
+
+        public string DisplayAddress { get; set; }
+
+        public bool IsCurrentUser { get; set; }
+    }
+
+    public class GetPublicProfileQuery : IRequest<PublicProfileResult>
+    {
+        public string Username { get; set; }
+
+        public GetPublicProfileQuery(string username)
+        {
+            Username = username;
+        }
+    }
+
+    public class GetPublicProfileQueryHandler : IRequestHandler<GetPublicProfileQuery, PublicProfileResult>
+    {
+        private readonly IJiggswapDb _db;
+        private readonly ICurrentUserService _currentUserService;
+
+        public GetPublicProfileQueryHandler(IJiggswapDb db, ICurrentUserService currentUserService)
+        {
+            _db = db;
+            _currentUserService = currentUserService;
+        }
+
+        public async Task<PublicProfileResult> Handle(GetPublicProfileQuery request, CancellationToken cancellationToken)
+        {
+            using var conn = _db.GetConnection();
+
+            var data = await conn.QuerySingleOrDefaultAsync<PrivateProfileDto>(@"
+                select
+                    UP.FirstName,
+                    UP.LastName,
+                    UP.StreetAddress,
+                    UP.City,
+                    UP.State,
+                    UP.Zip
+                from
+                    user_profiles UP
+                    join users U 
+                    on U.Id = UP.User_Id
+                where
+                    U.username = @Username",
+                new
+                {
+                    request.Username
+                }).ConfigureAwait(false) ?? new PrivateProfileDto();
+
+            return new PublicProfileResult
+            {
+                Username = request.Username,
+                IsCurrentUser = request.Username == _currentUserService.Username,
+                DisplayName = GetDisplayName(data),
+                DisplayAddress = GetDisplayAddress(data)
+            };
+        }
+
+        private static string GetDisplayName(PrivateProfileDto profile)
+        {
+            var firstName = profile.FirstName;
+            var lastName = profile.LastName;
+
+            var names = new List<string>();
+
+            if (!string.IsNullOrEmpty(firstName))
+            {
+                names.Add(firstName);
+            }
+
+            if (!string.IsNullOrEmpty(lastName))
+            {
+                names.Add(lastName[0] + ".");
+            }
+
+            return string.Join(" ", names);
+        }
+
+        private static string GetDisplayAddress(PrivateProfileDto profile)
+        {
+            var parts = new List<string>();
+
+            if (!string.IsNullOrEmpty(profile.City))
+            {
+                parts.Add(profile.City);
+            }
+
+            if (!string.IsNullOrEmpty(profile.State))
+            {
+                parts.Add(profile.State);
+            }
+
+            return string.Join(", ", parts);
+        }
+    }
+}
