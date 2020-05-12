@@ -16,8 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Jiggswap.Application\Jiggswap.Application.csproj" />
-    <ProjectReference Include="..\Jiggswap.Domain\Jiggswap.Domain.csproj" />
-    <ProjectReference Include="..\Jiggswap.Notifications\Jiggswap.Notifications.csproj" />
   </ItemGroup>
 
 

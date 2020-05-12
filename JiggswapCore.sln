@@ -20,13 +20,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jiggswap.Api", "Jiggswap.Api\Jiggswap.Api.csproj", "{22ABBE66-35BB-45AA-BD2D-5B960168944D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jiggswap.Domain", "Jiggswap.Domain\Jiggswap.Domain.csproj", "{F26B6F70-2C7D-44ED-82F2-6414256E2184}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jiggswap.Migrations", "Jiggswap.Migrations\Jiggswap.Migrations.csproj", "{822CBF6D-51A4-46D1-ACF5-008F7F97EE5F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jiggswap.Application", "Jiggswap.Application\Jiggswap.Application.csproj", "{DC8CA7EF-082F-480A-B1CB-EE829AED16F0}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jiggswap.Notifications", "Jiggswap.Notifications\Jiggswap.Notifications.csproj", "{0EBA41A4-12B6-4654-919B-C7C575BFA6DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,10 +34,6 @@ Global
 		{22ABBE66-35BB-45AA-BD2D-5B960168944D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22ABBE66-35BB-45AA-BD2D-5B960168944D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22ABBE66-35BB-45AA-BD2D-5B960168944D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F26B6F70-2C7D-44ED-82F2-6414256E2184}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F26B6F70-2C7D-44ED-82F2-6414256E2184}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F26B6F70-2C7D-44ED-82F2-6414256E2184}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F26B6F70-2C7D-44ED-82F2-6414256E2184}.Release|Any CPU.Build.0 = Release|Any CPU
 		{822CBF6D-51A4-46D1-ACF5-008F7F97EE5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{822CBF6D-51A4-46D1-ACF5-008F7F97EE5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{822CBF6D-51A4-46D1-ACF5-008F7F97EE5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -50,10 +42,6 @@ Global
 		{DC8CA7EF-082F-480A-B1CB-EE829AED16F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC8CA7EF-082F-480A-B1CB-EE829AED16F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC8CA7EF-082F-480A-B1CB-EE829AED16F0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0EBA41A4-12B6-4654-919B-C7C575BFA6DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0EBA41A4-12B6-4654-919B-C7C575BFA6DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0EBA41A4-12B6-4654-919B-C7C575BFA6DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0EBA41A4-12B6-4654-919B-C7C575BFA6DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

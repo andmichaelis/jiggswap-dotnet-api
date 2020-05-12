@@ -1,13 +1,14 @@
-﻿using System.Net;
-using System.Threading.Tasks;
-using Jiggswap.Notifications.Exceptions;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using SendGrid;
 using SendGrid.Helpers.Mail;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Jiggswap.Notifications.Common
+namespace Jiggswap.Application.Emails
 {
-    public class JiggswapEmailNotification
+    public class JiggswapHtmlEmail
     {
         public string Subject { get; set; }
 
@@ -18,19 +19,27 @@ namespace Jiggswap.Notifications.Common
         public EmailAddress ToEmail { get; set; }
     }
 
-    public interface IJiggswapNotifier
+    public class JiggswapTemplateEmail
     {
-        public Task<Response> SendForgotPasswordEmail(string email, string token);
+        public string TemplateId { get; set; }
+
+        public object TemplateData { get; set; }
+
+        public EmailAddress ToEmail { get; set; }
     }
 
-    public class JiggswapNotifier : IJiggswapNotifier
+    public interface IJiggswapEmailerBase
+    {
+    }
+
+    public class JiggswapEmailerBase : IJiggswapEmailerBase
     {
         private readonly string _sendGridApiKey;
         private readonly string _sendGridFromEmail;
         private readonly string _sendGridFromName;
-        private readonly string _sendGridBaseUrl;
+        protected readonly string _sendGridBaseUrl;
 
-        public JiggswapNotifier(IConfiguration config)
+        public JiggswapEmailerBase(IConfiguration config)
         {
             _sendGridApiKey = config["Notifications:SendGridApiKey"];
             _sendGridFromEmail = config["Notifications:FromEmail"];
@@ -38,7 +47,7 @@ namespace Jiggswap.Notifications.Common
             _sendGridBaseUrl = config["Notifications:BaseUrl"];
         }
 
-        private Task<Response> Send(JiggswapEmailNotification notification)
+        protected Task<Response> SendHtmlEmail(JiggswapHtmlEmail notification)
         {
             var sendGridClient = new SendGridClient(_sendGridApiKey);
             var from = new EmailAddress(_sendGridFromEmail, _sendGridFromName);
@@ -59,24 +68,13 @@ namespace Jiggswap.Notifications.Common
             return sendGridClient.SendEmailAsync(msg);
         }
 
-        public async Task<Response> SendForgotPasswordEmail(string email, string token)
+        protected Task<Response> SendTemplateEmail(JiggswapTemplateEmail notification)
         {
-            var resetUrl = $"{_sendGridBaseUrl}/reset-password?key={token}";
+            var sendGridClient = new SendGridClient(_sendGridApiKey);
+            var from = new EmailAddress(_sendGridFromEmail, _sendGridFromName);
 
-            return await Send(new JiggswapEmailNotification
-            {
-                Subject = "Jiggswap - Password Reset Instructions",
-                ToEmail = new EmailAddress(email),
-                PlainContent = $"Please use the following link to reset your password: {resetUrl}. If you have any questions, please get in touch with us by replying to this email.",
-                HtmlContent = $@"<div>
-                        Hello, <br />
-                        Please use the following link to reset your password:
-                        <hr />
-                            <a href='{resetUrl}'>Reset Jiggswap Password</a>
-                        <hr />
-                        If you have any questions, please get in touch with us by replying to this email.
-                    </div>"
-            });
+            var msg = MailHelper.CreateSingleTemplateEmail(from, notification.ToEmail, notification.TemplateId, notification.TemplateData);
+            return sendGridClient.SendEmailAsync(msg);
         }
     }
 }

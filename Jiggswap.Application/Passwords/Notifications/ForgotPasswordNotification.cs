@@ -1,8 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Jiggswap.Notifications;
-using Jiggswap.Notifications.Common;
+using Jiggswap.Application.Emails;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -18,9 +17,9 @@ namespace Jiggswap.Application.Passwords.Notifications
 
     public class ForgotPasswordNotificationEmailHandler : INotificationHandler<ForgotPasswordNotification>
     {
-        private readonly IJiggswapNotifier _notifier;
+        private readonly IJiggswapForgotPasswordEmail _notifier;
 
-        public ForgotPasswordNotificationEmailHandler(IJiggswapNotifier notifier)
+        public ForgotPasswordNotificationEmailHandler(IJiggswapForgotPasswordEmail notifier)
         {
             _notifier = notifier;
         }

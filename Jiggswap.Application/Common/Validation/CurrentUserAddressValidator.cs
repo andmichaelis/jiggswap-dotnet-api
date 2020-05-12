@@ -20,6 +20,7 @@ namespace Jiggswap.Application.Common.Validation
 
             RuleFor(v => v.InternalUserId)
                 .MustAsync(BeValidAddress)
+                .OverridePropertyName("Address")
                 .WithMessage("You need to have a valid address.");
         }
 
@@ -35,6 +36,11 @@ namespace Jiggswap.Application.Common.Validation
                 from
                     user_profiles
                 where user_id = @id", new { id }).ConfigureAwait(false);
+
+            if (address == null)
+            {
+                return false;
+            }
 
             var validator = new AddressValidator();
 

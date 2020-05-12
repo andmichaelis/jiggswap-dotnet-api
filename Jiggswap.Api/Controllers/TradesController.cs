@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Jiggswap.Application.Common.Interfaces;
+using Jiggswap.Application.Emails;
 using Jiggswap.Application.Trades.Commands;
+using Jiggswap.Application.Trades.Dtos;
 using Jiggswap.Application.Trades.Queries;
 using Jiggswap.Application.Trades.Requests;
 using Jiggswap.Application.Users.Queries;
-using Jiggswap.Domain.Trades;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,10 +21,12 @@ namespace Jiggswap.Api.Controllers
     public class TradesController : BaseJiggswapController
     {
         private readonly ICurrentUserService _currentUserService;
+        private readonly IJiggswapNewTradeEmail _newTradeEmailer;
 
-        public TradesController(ICurrentUserService currentUserService, IMediator mediator) : base(mediator)
+        public TradesController(ICurrentUserService currentUserService, IMediator mediator, IJiggswapNewTradeEmail newTradeEmail) : base(mediator)
         {
             _currentUserService = currentUserService;
+            _newTradeEmailer = newTradeEmail;
         }
 
         [HttpPost]
@@ -34,10 +37,11 @@ namespace Jiggswap.Api.Controllers
             var tradeDetails = await Mediator.Send(new GetTradeDetailsQuery
             {
                 TradeId = tradeId
-            }).ConfigureAwait(false);
+            });
 
-            var emailRecipient = await Mediator.Send(new GetUserEmailFromUsernameQuery(tradeDetails.RequestedUsername))
-                .ConfigureAwait(false);
+            var recipientEmail = await Mediator.Send(new GetUserEmailFromUsernameQuery(tradeDetails.RequestedUsername));
+
+            await _newTradeEmailer.SendNewTradeEmail(recipientEmail, tradeDetails);
 
             return Ok(tradeId);
         }

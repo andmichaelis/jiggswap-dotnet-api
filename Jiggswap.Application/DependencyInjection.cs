@@ -7,6 +7,7 @@ using System.Text;
 using Jiggswap.Application.Common;
 using StackExchange.Redis;
 using Microsoft.Extensions.Configuration;
+using Jiggswap.Application.Emails;
 
 namespace Jiggswap.Application
 {
@@ -20,6 +21,10 @@ namespace Jiggswap.Application
 
             services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(config.GetConnectionString("JiggswapRedis")));
             services.AddTransient<IJiggswapRedisConnection, JiggswapRedisConnection>();
+
+            services.AddTransient<IJiggswapEmailerBase, JiggswapEmailerBase>();
+            services.AddTransient<IJiggswapForgotPasswordEmail, JiggswapForgotPasswordEmail>();
+            services.AddTransient<IJiggswapNewTradeEmail, JiggswapNewTradeEmail>();
 
             return services;
         }

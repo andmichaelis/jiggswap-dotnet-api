@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Jiggswap.Domain.Trades
+namespace Jiggswap.Application.Trades.Dtos
 {
     public static class TradeStates
     {

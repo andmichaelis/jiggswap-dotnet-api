@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using FluentValidation;
 using Jiggswap.Application.Common;
-using Jiggswap.Application.Passwords.Notifications;
-using Jiggswap.Notifications.Common;
 using MediatR;
 using StackExchange.Redis;
 

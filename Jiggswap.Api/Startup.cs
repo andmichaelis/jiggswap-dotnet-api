@@ -3,8 +3,6 @@ using Jiggswap.Api.Configuration;
 using Jiggswap.Api.Services;
 using Jiggswap.Application;
 using Jiggswap.Application.Common.Interfaces;
-using Jiggswap.Notifications;
-using Jiggswap.Notifications.Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -30,8 +28,6 @@ namespace JiggswapApi
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddTransient<ITokenBuilder, TokenBuilder>();
             services.AddTransient<IJiggswapCache, JiggswapCache>();
-
-            services.AddJiggswapNotifications();
 
             services.AddJiggswapApplication(Configuration);
 

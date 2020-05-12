@@ -5,7 +5,7 @@ using Dapper;
 using FluentValidation;
 using Jiggswap.Application.Common;
 using Jiggswap.Application.Common.Interfaces;
-using Jiggswap.Domain.Trades;
+using Jiggswap.Application.Trades.Dtos;
 
 namespace Jiggswap.Application.Trades.Requests
 {

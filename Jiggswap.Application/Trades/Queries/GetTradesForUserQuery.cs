@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using Jiggswap.Application.Common;
-using Jiggswap.Domain.Trades;
+using Jiggswap.Application.Trades.Dtos;
 using MediatR;
 
 namespace Jiggswap.Application.Trades.Queries

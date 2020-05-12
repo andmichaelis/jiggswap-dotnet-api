@@ -1,5 +1,4 @@
-﻿
-using Dapper;
+﻿using Dapper;
 using Jiggswap.Application.Common;
 using MediatR;
 using System;
@@ -20,6 +19,10 @@ namespace Jiggswap.Application.Puzzles.Queries
 
         [JsonIgnore]
         public string TagValue { get; set; }
+
+        public string NumPieces { get; set; }
+
+        public string NumPiecesMissing { get; set; }
 
         public IEnumerable<string> Tags => string.IsNullOrEmpty(TagValue) ? Array.Empty<string>() : TagValue.Split(",");
     }
@@ -45,11 +48,13 @@ namespace Jiggswap.Application.Puzzles.Queries
             var sqlBuilder = new SqlBuilder();
 
             var template = sqlBuilder.AddTemplate(@"
-                select 
+                select
                     P.public_id as PuzzleId,
                     P.Title,
                     P.image_id ImageId,
-                    P.tags TagValue
+                    P.tags TagValue,
+                    P.num_pieces NumPieces,
+                    P.num_pieces_missing NumPiecesMissing
                 from Puzzles P
                     /**join**/
                     /**where**/");
