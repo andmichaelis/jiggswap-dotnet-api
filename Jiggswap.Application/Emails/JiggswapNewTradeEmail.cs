@@ -33,12 +33,16 @@ namespace Jiggswap.Application.Emails
                     puzRcpName = tradeDetails.RequestedPuzzleTitle,
                     puzRcpPcs = tradeDetails.RequestedPuzzlePieces,
                     puzRcpBrand = tradeDetails.RequestedPuzzleBrand,
-                    puzRcpImageUrl = $"https://i5.walmartimages.com/asr/a8f5140c-9271-4440-b64b-997240936d19_1.5d9cab66a545eaa83779b9867ea5bbdd.jpeg",
+                    puzRcpImageUrl = $"{_sendGridBaseUrl}/image/{tradeDetails.RequestedPuzzleImageId}",
 
                     puzInitName = tradeDetails.InitiatorPuzzleTitle,
                     puzInitPcs = tradeDetails.InitiatorPuzzlePieces,
                     puzInitBrand = tradeDetails.InitiatorPuzzleBrand,
-                    puzInitImageUrl = $"https://i5.walmartimages.com/asr/a8f5140c-9271-4440-b64b-997240936d19_1.5d9cab66a545eaa83779b9867ea5bbdd.jpeg"
+                    puzInitImageUrl = $"{_sendGridBaseUrl}/image/{tradeDetails.InitiatorPuzzleImageId}",
+
+                    tradeAcceptUrl = $"{_sendGridBaseUrl}/trade/view?t={tradeDetails.TradeId}&act=accept",
+                    tradeDeclineUrl = $"{_sendGridBaseUrl}/trade/view?t={tradeDetails.TradeId}&act=decline",
+                    tradeViewUrl = $"{_sendGridBaseUrl}/trade/view?t={tradeDetails.TradeId}"
                 }
             });
         }
