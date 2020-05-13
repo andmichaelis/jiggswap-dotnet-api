@@ -1,25 +1,28 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Dapper;
+﻿using Dapper;
 using FluentValidation;
 using Jiggswap.Application.Common;
 using Jiggswap.Application.Common.Interfaces;
 using Jiggswap.Application.Trades.Dtos;
+using MediatR;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Jiggswap.Application.Trades.Requests
+namespace Jiggswap.Application.Trades.Commands
 {
-    public class CancelTradeRequest
+    public class CancelTradeCommand : IRequest<bool>
     {
         public Guid TradeId { get; set; }
     }
 
-    public class CancelTradeRequestValidator : AbstractValidator<CancelTradeRequest>
+    public class CancelTradeCommandValidator : AbstractValidator<CancelTradeCommand>
     {
         private readonly IJiggswapDb _db;
         private readonly ICurrentUserService _currentUser;
 
-        public CancelTradeRequestValidator(IJiggswapDb db, ICurrentUserService currentUser)
+        public CancelTradeCommandValidator(IJiggswapDb db, ICurrentUserService currentUser)
         {
             _db = db;
             _currentUser = currentUser;
@@ -32,8 +35,6 @@ namespace Jiggswap.Application.Trades.Requests
 
                 .MustAsync(BeActiveOrProposedTrade)
                 .WithMessage("That trade is not active.");
-
-            // Also: Puzzle not yet "Sent" by other party.
         }
 
         private async Task<bool> IncludeCurrentUser(Guid id, CancellationToken cancel)
@@ -58,6 +59,30 @@ namespace Jiggswap.Application.Trades.Requests
             var currentStatus = await conn.QuerySingleOrDefaultAsync<string>(sql, new { id }).ConfigureAwait(false);
 
             return currentStatus == TradeStates.Active || currentStatus == TradeStates.Proposed;
+        }
+    }
+
+    public class CancelTradeCommandHandler : IRequestHandler<CancelTradeCommand, bool>
+    {
+        private readonly IJiggswapDb _db;
+
+        public CancelTradeCommandHandler(IJiggswapDb db)
+        {
+            _db = db;
+        }
+
+        public async Task<bool> Handle(CancelTradeCommand request, CancellationToken cancellationToken)
+        {
+            using var conn = _db.GetConnection();
+
+            await conn.ExecuteAsync("update trades set status = @Status where Public_Id = @TradeId",
+                new
+                {
+                    TradeStates.Inactive,
+                    request.TradeId
+                });
+
+            return true;
         }
     }
 }

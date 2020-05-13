@@ -39,9 +39,7 @@ namespace Jiggswap.Api.Controllers
         [HttpPost("")]
         public async Task<ActionResult> CreatePuzzle([FromForm] CreatePuzzleCommand command)
         {
-            var instance = command as CreatePuzzleCommand;
-
-            var result = await Mediator.Send(instance).ConfigureAwait(false);
+            var result = await Mediator.Send(command).ConfigureAwait(false);
 
             await Mediator.Send(new CreatePuzzleImageCommand
             {

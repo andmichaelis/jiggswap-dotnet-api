@@ -6,6 +6,7 @@ using Jiggswap.Application.Users.Dtos;
 using JiggswapApi.Services;
 using MediatR;
 using System;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -63,6 +64,8 @@ namespace Jiggswap.Application.Users.Commands
             RuleFor(v => v.Username)
                 .NotNull()
                 .Length(6, 50)
+                .Must(NotHaveInvalidCharacters)
+                .WithMessage("Username can only contain letters and numbers.")
                 .Must(v => BeUniqueUsername(v, db))
                 .WithMessage("{PropertyValue} is already taken.");
 
@@ -73,6 +76,12 @@ namespace Jiggswap.Application.Users.Commands
                 .WithMessage("{PropertyValue} is already taken.");
 
             Include(new PasswordValidator());
+        }
+
+        private bool NotHaveInvalidCharacters(string arg)
+        {
+            Regex r = new Regex("^[a-zA-Z0-9]*$");
+            return r.IsMatch(arg);
         }
 
         private bool BeUniqueEmail(string email, IJiggswapDb db)

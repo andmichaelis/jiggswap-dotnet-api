@@ -7,6 +7,7 @@ using Jiggswap.Application.Puzzles.Commands;
 using Jiggswap.Application.Puzzles.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Jiggswap.Api.Controllers
@@ -21,7 +22,7 @@ namespace Jiggswap.Api.Controllers
         }
 
         [HttpGet("{id}"), ResponseCache(Duration = int.MaxValue)]
-        public async Task<ActionResult<byte[]>> Get([FromRoute] int id)
+        public async Task<ActionResult> Get([FromRoute] int id)
         {
             var data = await Mediator.Send(new GetImageQuery { ImageId = id }).ConfigureAwait(false);
 

@@ -65,8 +65,6 @@ namespace Jiggswap.Application.Puzzles.Queries
                 sqlBuilder.Where("U.Username = @Username", new { request.Username });
             }
 
-            Console.WriteLine(template.RawSql);
-
             return await conn.QueryAsync<PuzzleListItem>(template.RawSql, template.Parameters).ConfigureAwait(false);
         }
     }

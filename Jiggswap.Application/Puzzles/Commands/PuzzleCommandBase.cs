@@ -16,6 +16,8 @@ namespace Jiggswap.Application.Puzzles.Commands
     {
         public string Title { get; set; }
 
+        public string Brand { get; set; }
+
         public int NumPieces { get; set; }
 
         public int NumPiecesMissing { get; set; }
@@ -34,6 +36,9 @@ namespace Jiggswap.Application.Puzzles.Commands
             RuleFor(v => v.Title)
                 .NotNull()
                 .Length(5, 100);
+
+            RuleFor(v => v.Brand)
+                .MaximumLength(50);
 
             RuleFor(v => v.AdditionalNotes)
                 .MaximumLength(200);

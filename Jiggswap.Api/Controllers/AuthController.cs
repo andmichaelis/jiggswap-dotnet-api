@@ -26,18 +26,27 @@ namespace JiggswapApi.Controllers
 
         [HttpPost("authorize")]
         [AllowAnonymous]
-        public ActionResult<AuthorizedUserResponseWithToken> Authorize(UserSigninQuery request)
+        public async Task<ActionResult<AuthorizedUserResponseWithToken>> Authorize(UserSigninQuery request)
         {
+            var isEmail = request.UsernameOrEmail.Contains('@');
+
+            var username = request.UsernameOrEmail;
+
+            if (isEmail)
+            {
+                username = await Mediator.Send(new GetUsernameFromEmailQuery(request.UsernameOrEmail));
+            }
+
             var result = new AuthorizedUserResponse
             {
-                Username = request.Username
+                Username = username
             };
 
             var token = _tokenBuilder.CreateToken(result);
 
             return Ok(new AuthorizedUserResponseWithToken
             {
-                Username = request.Username,
+                Username = username,
                 Token = token
             });
         }

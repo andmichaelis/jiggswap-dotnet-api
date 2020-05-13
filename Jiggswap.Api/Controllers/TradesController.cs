@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Jiggswap.Application.Common.Interfaces;
 using Jiggswap.Application.Emails;
 using Jiggswap.Application.Trades.Commands;
-using Jiggswap.Application.Trades.Dtos;
 using Jiggswap.Application.Trades.Queries;
-using Jiggswap.Application.Trades.Requests;
 using Jiggswap.Application.Users.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -58,17 +54,25 @@ namespace Jiggswap.Api.Controllers
         }
 
         [HttpPost("accept")]
-        public async Task<ActionResult<bool>> AcceptTrade(AcceptTradeRequest request)
+        public async Task<ActionResult<bool>> AcceptTrade(AcceptTradeCommand request)
         {
-            await Mediator.Send(new UpdateTradeStateCommand(request.TradeId, TradeStates.Active)).ConfigureAwait(false);
+            await Mediator.Send(request);
 
             return Ok();
         }
 
         [HttpPost("cancel")]
-        public async Task<ActionResult> CancelTrade(CancelTradeRequest request)
+        public async Task<ActionResult> CancelTrade(CancelTradeCommand request)
         {
-            await Mediator.Send(new UpdateTradeStateCommand(request.TradeId, TradeStates.Inactive)).ConfigureAwait(false);
+            await Mediator.Send(request);
+
+            return Ok();
+        }
+
+        [HttpPost("decline")]
+        public async Task<ActionResult> DeclineTrade(DeclineTradeCommand request)
+        {
+            await Mediator.Send(request);
 
             return Ok();
         }

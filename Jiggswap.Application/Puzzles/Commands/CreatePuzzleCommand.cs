@@ -38,14 +38,15 @@ namespace Jiggswap.Application.Puzzles.Commands
 
             var puzzleId = await conn.QuerySingleAsync<Guid>(@"
                     insert into puzzles
-                        (owner_id, title, num_pieces, num_pieces_missing, tags, additional_notes)
+                        (owner_id, title, brand, num_pieces, num_pieces_missing, tags, additional_notes)
                     values
-                        (@CurrentUserId, @Title, @NumPieces, @NumPiecesMissing, @Tags, @AdditionalNotes)
+                        (@CurrentUserId, @Title, @Brand, @NumPieces, @NumPiecesMissing, @Tags, @AdditionalNotes)
                     returning public_id",
                 new
                 {
                     CurrentUserId = _currentUserService.InternalUserId,
                     request.Title,
+                    request.Brand,
                     request.NumPieces,
                     request.NumPiecesMissing,
                     request.Tags,

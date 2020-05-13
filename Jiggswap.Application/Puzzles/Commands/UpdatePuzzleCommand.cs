@@ -30,11 +30,11 @@ namespace Jiggswap.Application.Puzzles.Commands
             using var conn = db.GetConnection();
 
             var puzzleOwnerId = conn.QuerySingleOrDefault<int>(
-                @"select 
+                @"select
                     p.owner_id
-                from 
+                from
                     puzzles p
-                where 
+                where
                     p.public_id = @PuzzleId", new
                 {
                     PuzzleId = puzzleId
@@ -57,9 +57,12 @@ namespace Jiggswap.Application.Puzzles.Commands
         {
             using var conn = _db.GetConnection();
 
+            Console.WriteLine($"Brand: {request.Brand}");
+
             const string sql = @"
                 update puzzles set
                     title = @Title,
+                    brand = @Brand,
                     num_pieces = @NumPieces,
                     num_pieces_missing = @NumPiecesMissing,
                     additional_notes = @AdditionalNotes,
@@ -70,6 +73,7 @@ namespace Jiggswap.Application.Puzzles.Commands
             await conn.ExecuteAsync(sql, new
             {
                 request.Title,
+                request.Brand,
                 request.NumPieces,
                 request.NumPiecesMissing,
                 request.AdditionalNotes,
