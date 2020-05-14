@@ -24,8 +24,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jiggswap.Migrations", "Jigg
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jiggswap.Application", "Jiggswap.Application\Jiggswap.Application.csproj", "{DC8CA7EF-082F-480A-B1CB-EE829AED16F0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jiggswap.Domain", "Jiggswap.Domain\Jiggswap.Domain.csproj", "{715ABAE4-7216-4637-BDE3-5F68723C56A4}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,10 +42,6 @@ Global
 		{DC8CA7EF-082F-480A-B1CB-EE829AED16F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC8CA7EF-082F-480A-B1CB-EE829AED16F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC8CA7EF-082F-480A-B1CB-EE829AED16F0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{715ABAE4-7216-4637-BDE3-5F68723C56A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{715ABAE4-7216-4637-BDE3-5F68723C56A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{715ABAE4-7216-4637-BDE3-5F68723C56A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{715ABAE4-7216-4637-BDE3-5F68723C56A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

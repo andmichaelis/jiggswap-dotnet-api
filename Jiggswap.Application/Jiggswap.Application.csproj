@@ -28,8 +28,4 @@
     <Folder Include="Common\Behaviors\" />
     <Folder Include="Common\Extensions\" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Jiggswap.Domain\Jiggswap.Domain.csproj" />
-  </ItemGroup>
 </Project>
