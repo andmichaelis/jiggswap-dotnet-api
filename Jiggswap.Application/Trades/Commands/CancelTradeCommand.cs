@@ -33,8 +33,8 @@ namespace Jiggswap.Application.Trades.Commands
                 .MustAsync(IncludeCurrentUser)
                 .WithMessage("You are not involved with this trade.")
 
-                .MustAsync(BeActiveOrProposedTrade)
-                .WithMessage("That trade is not active.");
+                .MustAsync(BeProposedTrade)
+                .WithMessage("That trade is not proposed.");
         }
 
         private async Task<bool> IncludeCurrentUser(Guid id, CancellationToken cancel)
@@ -50,7 +50,7 @@ namespace Jiggswap.Application.Trades.Commands
             return _currentUser.InternalUserId == initiatorUserId || _currentUser.InternalUserId == requestedUserId;
         }
 
-        private async Task<bool> BeActiveOrProposedTrade(Guid id, CancellationToken cancel)
+        private async Task<bool> BeProposedTrade(Guid id, CancellationToken cancel)
         {
             using var conn = _db.GetConnection();
 
@@ -58,7 +58,7 @@ namespace Jiggswap.Application.Trades.Commands
 
             var currentStatus = await conn.QuerySingleOrDefaultAsync<string>(sql, new { id });
 
-            return currentStatus == TradeStates.Active || currentStatus == TradeStates.Proposed;
+            return currentStatus == TradeStates.Proposed;
         }
     }
 
