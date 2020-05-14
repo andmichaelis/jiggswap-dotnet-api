@@ -28,6 +28,15 @@ namespace Jiggswap.Api.Controllers
             return Ok(result);
         }
 
+        [HttpGet("ef")]
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<PuzzleListItem>>> GetPuzzlesEf()
+        {
+            var result = await Mediator.Send(new GetPuzzlesListEfQuery());
+
+            return Ok(result);
+        }
+
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<ActionResult> GetPuzzleDetails([FromRoute] Guid id)

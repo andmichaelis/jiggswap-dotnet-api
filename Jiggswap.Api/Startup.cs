@@ -3,6 +3,7 @@ using Jiggswap.Api.Configuration;
 using Jiggswap.Api.Services;
 using Jiggswap.Application;
 using Jiggswap.Application.Common.Interfaces;
+using Jiggswap.Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -30,6 +31,7 @@ namespace JiggswapApi
             services.AddTransient<IJiggswapCache, JiggswapCache>();
 
             services.AddJiggswapApplication(Configuration);
+            services.AddJiggswapEntityFramework(Configuration);
 
             services.AddHttpContextAccessor();
 
