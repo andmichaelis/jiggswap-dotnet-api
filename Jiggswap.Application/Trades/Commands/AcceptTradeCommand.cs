@@ -77,15 +77,55 @@ namespace Jiggswap.Application.Trades.Commands
         {
             using var conn = _db.GetConnection();
 
-            // set trade active
-            await conn.QueryAsync("update trades set status = @Active where Public_Id = @TradeId",
+            conn.Open();
+
+            using var transaction = conn.BeginTransaction();
+
+            var tradeId = await conn.QuerySingleAsync<int>("update trades set status = @Active where Public_Id = @TradeId returning id",
             new
             {
                 TradeStates.Active,
                 request.TradeId
             });
 
-            // set trades to inactive if they contain either puzzle
+            await conn.QueryAsync(@"
+            with trade_info as
+            (
+	            select
+		            initiator_puzzle_id,
+		            requested_puzzle_id
+	            from
+		            trades t
+	            where t.id = @TradeId
+            ), trades_to_inactivate as
+            (
+	            select
+		            id
+	            from
+		            trades t2
+		            join trade_info ti
+		            on
+			            (
+				               t2.initiator_puzzle_id = ti.initiator_puzzle_id
+				            or t2.initiator_puzzle_id = ti.requested_puzzle_id
+				            or t2.requested_puzzle_id = ti.initiator_puzzle_id
+				            or t2.requested_puzzle_id = ti.requested_puzzle_id
+			            )
+		            where t2.id != @TradeId
+            )
+            update trades tu
+            set status = @Inactive
+            where tu.id in (select id from trades_to_inactivate)",
+                new
+                {
+                    TradeId = tradeId,
+                    TradeStates.Inactive
+                }
+            );
+
+            transaction.Commit();
+
+            conn.Close();
 
             return true;
         }

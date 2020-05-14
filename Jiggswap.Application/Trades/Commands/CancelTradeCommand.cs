@@ -44,8 +44,8 @@ namespace Jiggswap.Application.Trades.Commands
             const string initiatorSql = "select initiator_user_id from trades where public_id = @id";
             const string requestedSql = "select requested_user_id from trades where public_id = @id";
 
-            var initiatorUserId = await conn.QuerySingleOrDefaultAsync<int>(initiatorSql, new { id }).ConfigureAwait(false);
-            var requestedUserId = await conn.QuerySingleOrDefaultAsync<int>(requestedSql, new { id }).ConfigureAwait(false);
+            var initiatorUserId = await conn.QuerySingleOrDefaultAsync<int>(initiatorSql, new { id });
+            var requestedUserId = await conn.QuerySingleOrDefaultAsync<int>(requestedSql, new { id });
 
             return _currentUser.InternalUserId == initiatorUserId || _currentUser.InternalUserId == requestedUserId;
         }
@@ -56,7 +56,7 @@ namespace Jiggswap.Application.Trades.Commands
 
             const string sql = "select status from trades where public_id = @id";
 
-            var currentStatus = await conn.QuerySingleOrDefaultAsync<string>(sql, new { id }).ConfigureAwait(false);
+            var currentStatus = await conn.QuerySingleOrDefaultAsync<string>(sql, new { id });
 
             return currentStatus == TradeStates.Active || currentStatus == TradeStates.Proposed;
         }
@@ -75,7 +75,7 @@ namespace Jiggswap.Application.Trades.Commands
         {
             using var conn = _db.GetConnection();
 
-            await conn.ExecuteAsync("update trades set status = @Status where Public_Id = @TradeId",
+            await conn.ExecuteAsync("update trades set status = @Inactive where Public_Id = @TradeId",
                 new
                 {
                     TradeStates.Inactive,
