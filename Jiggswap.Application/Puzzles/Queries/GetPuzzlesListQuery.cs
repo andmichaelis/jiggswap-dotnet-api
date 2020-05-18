@@ -3,6 +3,7 @@ using Jiggswap.Application.Common;
 using MediatR;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,7 +30,11 @@ namespace Jiggswap.Application.Puzzles.Queries
 
     public class GetPuzzlesListQuery : IRequest<IEnumerable<PuzzleListItem>>
     {
-        public string Username { get; set; }
+        public string Owner { get; set; }
+
+        public string IgnoreOwner { get; set; }
+
+        public bool? IncludeActiveTrades { get; set; }
     }
 
     public class GetPuzzlesListQueryHandler : IRequestHandler<GetPuzzlesListQuery, IEnumerable<PuzzleListItem>>
@@ -45,9 +50,7 @@ namespace Jiggswap.Application.Puzzles.Queries
         {
             using var conn = _db.GetConnection();
 
-            var sqlBuilder = new SqlBuilder();
-
-            var template = sqlBuilder.AddTemplate(@"
+            var sql = @"
                 select
                     P.public_id as PuzzleId,
                     P.Title,
@@ -55,17 +58,36 @@ namespace Jiggswap.Application.Puzzles.Queries
                     P.tags TagValue,
                     P.num_pieces NumPieces,
                     P.num_pieces_missing NumPiecesMissing
-                from Puzzles P
-                    /**join**/
-                    /**where**/");
+                from Puzzles P";
 
-            if (!string.IsNullOrEmpty(request.Username))
+            if (!string.IsNullOrEmpty(request.Owner))
             {
-                sqlBuilder.Join("Users U on P.owner_id = U.id");
-                sqlBuilder.Where("U.Username = @Username", new { request.Username });
+                sql += @"
+                    join users O on P.owner_id = O.id and O.Username = @Owner";
             }
 
-            return await conn.QueryAsync<PuzzleListItem>(template.RawSql, template.Parameters).ConfigureAwait(false);
+            if (!string.IsNullOrEmpty(request.IgnoreOwner))
+            {
+                sql += @"
+                    join users I on P.owner_id != I.id and I.Username = @IgnoreOwner";
+            }
+
+            sql += BuildWhereClause(request);
+
+            return await conn.QueryAsync<PuzzleListItem>(sql, request).ConfigureAwait(false);
+        }
+
+        public string BuildWhereClause(GetPuzzlesListQuery request)
+        {
+            if (request.IncludeActiveTrades == true)
+            {
+                return "";
+            }
+            else
+            {
+                return @"
+                    where P.is_in_trade = false";
+            }
         }
     }
 }

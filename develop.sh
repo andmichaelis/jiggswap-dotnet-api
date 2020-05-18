@@ -1,16 +1,22 @@
 RunMigrations=0
 StopDocker=0
+SeedDatabase=0
 
 for arg in "$@"
 do
 	case "$arg" in
 	-h) echo "develop.sh usage:"
-		echo "-s: Stop Docker Containers after Jiggswap.Api"
 		echo "-h: Show this help text"
+		echo "-m: Run Database Migrations"
+		echo "-d: Seed Database"
+		echo "-s: Stop Docker Containers after Jiggswap.Api"
 		exit 0
 		;;
 	-m)	RunMigrations=1
 		echo "-m: migrations will run"
+		;;
+	-d) SeedDatabase=1
+		echo "-d: Database will be seeded"
 		;;
 	-s) StopDocker=1
 		echo "-s: docker will stop containers when dotnet ends"
@@ -31,6 +37,14 @@ then
 		echo "exiting ./develop.sh"
 		exit 127
 	fi
+	cd ..
+fi
+
+if [ $SeedDatabase -eq 1 ]
+then
+	echo "Seeding database with dummy data"
+	cd ./Jiggswap.DatabaseSeeder
+	dotnet run
 	cd ..
 fi
 
