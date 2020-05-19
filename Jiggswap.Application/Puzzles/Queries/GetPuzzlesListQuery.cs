@@ -77,7 +77,7 @@ namespace Jiggswap.Application.Puzzles.Queries
             return await conn.QueryAsync<PuzzleListItem>(sql, request).ConfigureAwait(false);
         }
 
-        public string BuildWhereClause(GetPuzzlesListQuery request)
+        public static string BuildWhereClause(GetPuzzlesListQuery request)
         {
             if (request.IncludeActiveTrades == true)
             {

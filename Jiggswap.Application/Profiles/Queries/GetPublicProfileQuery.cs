@@ -12,18 +12,18 @@ using MediatR;
 
 namespace Jiggswap.Application.Profiles.Queries
 {
-    public class PublicProfileResult
+    public class PublicProfileDto
     {
         public string Username { get; set; }
 
         public string DisplayName { get; set; }
 
-        public string DisplayAddress { get; set; }
+        public string DisplayCity { get; set; }
 
         public bool IsCurrentUser { get; set; }
     }
 
-    public class GetPublicProfileQuery : IRequest<PublicProfileResult>
+    public class GetPublicProfileQuery : IRequest<PublicProfileDto>
     {
         public string Username { get; set; }
 
@@ -33,7 +33,7 @@ namespace Jiggswap.Application.Profiles.Queries
         }
     }
 
-    public class GetPublicProfileQueryHandler : IRequestHandler<GetPublicProfileQuery, PublicProfileResult>
+    public class GetPublicProfileQueryHandler : IRequestHandler<GetPublicProfileQuery, PublicProfileDto>
     {
         private readonly IJiggswapDb _db;
         private readonly ICurrentUserService _currentUserService;
@@ -44,7 +44,7 @@ namespace Jiggswap.Application.Profiles.Queries
             _currentUserService = currentUserService;
         }
 
-        public async Task<PublicProfileResult> Handle(GetPublicProfileQuery request, CancellationToken cancellationToken)
+        public async Task<PublicProfileDto> Handle(GetPublicProfileQuery request, CancellationToken cancellationToken)
         {
             using var conn = _db.GetConnection();
 
@@ -58,7 +58,7 @@ namespace Jiggswap.Application.Profiles.Queries
                     UP.Zip
                 from
                     user_profiles UP
-                    join users U 
+                    join users U
                     on U.Id = UP.User_Id
                 where
                     U.username = @Username",
@@ -67,12 +67,12 @@ namespace Jiggswap.Application.Profiles.Queries
                     request.Username
                 }).ConfigureAwait(false) ?? new PrivateProfileDto();
 
-            return new PublicProfileResult
+            return new PublicProfileDto
             {
                 Username = request.Username,
                 IsCurrentUser = request.Username == _currentUserService.Username,
                 DisplayName = GetDisplayName(data),
-                DisplayAddress = GetDisplayAddress(data)
+                DisplayCity = GetDisplayCity(data)
             };
         }
 
@@ -96,7 +96,7 @@ namespace Jiggswap.Application.Profiles.Queries
             return string.Join(" ", names);
         }
 
-        private static string GetDisplayAddress(PrivateProfileDto profile)
+        private static string GetDisplayCity(PrivateProfileDto profile)
         {
             var parts = new List<string>();
 

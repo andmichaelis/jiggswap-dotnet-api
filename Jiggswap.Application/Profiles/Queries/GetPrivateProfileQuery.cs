@@ -13,12 +13,7 @@ namespace Jiggswap.Application.Profiles.Queries
 {
     public class GetPrivateProfileQuery : IRequest<PrivateProfileDto>
     {
-        public string Username { get; set; }
-
-        public GetPrivateProfileQuery(string username)
-        {
-            Username = username;
-        }
+        public int UserId { get; set; }
     }
 
     public class GetPrivateProfileQueryHandler : IRequestHandler<GetPrivateProfileQuery, PrivateProfileDto>
@@ -43,14 +38,12 @@ namespace Jiggswap.Application.Profiles.Queries
                 Zip
             from
                 user_profiles UP
-                join users U
-                on U.id = UP.user_id
-            where U.username = @Username";
+            where UP.user_id = @UserId";
 
             return await conn.QuerySingleOrDefaultAsync<PrivateProfileDto>(sql, new
             {
-                request.Username
-            }).ConfigureAwait(false) ?? new PrivateProfileDto();
+                request.UserId
+            }) ?? new PrivateProfileDto();
         }
     }
 }
