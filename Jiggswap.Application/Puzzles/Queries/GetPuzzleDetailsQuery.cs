@@ -36,6 +36,8 @@ namespace Jiggswap.Application.Puzzles.Queries
 
         public string TagValue { get; set; }
 
+        public bool IsInTrade { get; set; }
+
         public IEnumerable<string> Tags => string.IsNullOrEmpty(TagValue) ? Array.Empty<string>() : TagValue.Split(",");
     }
 
@@ -78,7 +80,8 @@ namespace Jiggswap.Application.Puzzles.Queries
                         O.Public_Id OwnerUserId,
                         O.Username OwnerUsername,
                         P.Image_Id ImageId,
-                        P.Tags TagValue
+                        P.Tags TagValue,
+                        P.is_in_trade IsInTrade
                     from
                         Puzzles P
                         join Users O

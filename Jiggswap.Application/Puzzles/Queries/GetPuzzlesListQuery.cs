@@ -25,6 +25,8 @@ namespace Jiggswap.Application.Puzzles.Queries
 
         public string NumPiecesMissing { get; set; }
 
+        public bool IsInTrade { get; set; }
+
         public IEnumerable<string> Tags => string.IsNullOrEmpty(TagValue) ? Array.Empty<string>() : TagValue.Split(",");
     }
 
@@ -57,7 +59,8 @@ namespace Jiggswap.Application.Puzzles.Queries
                     P.image_id ImageId,
                     P.tags TagValue,
                     P.num_pieces NumPieces,
-                    P.num_pieces_missing NumPiecesMissing
+                    P.num_pieces_missing NumPiecesMissing,
+                    P.is_in_trade IsInTrade
                 from Puzzles P";
 
             if (!string.IsNullOrEmpty(request.Owner))
