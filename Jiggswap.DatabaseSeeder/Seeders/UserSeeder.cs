@@ -87,13 +87,16 @@ namespace Jiggswap.DatabaseSeeder.Seeders
 
                 id = _dbConn.QuerySingle<int>(createSql, user);
 
-                user.Profile.UserId = id;
-                var profileSql = @"insert into user_profiles
+                if (user.Profile != null)
+                {
+                    user.Profile.UserId = id;
+                    var profileSql = @"insert into user_profiles
                     (user_id, firstname, lastname,
                      streetaddress, city, state, zip)
                      values (@UserId, @FirstName, @LastName,
                      @StreetAddress, @City, @State, @Zip)";
-                _dbConn.Query(profileSql, user.Profile);
+                    _dbConn.Query(profileSql, user.Profile);
+                }
 
                 Console.WriteLine($"Created User: {user}");
             }

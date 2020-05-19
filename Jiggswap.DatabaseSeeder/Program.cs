@@ -6,6 +6,8 @@
         {
             var handler = new DbSeedHandler();
 
+            handler.ResetData();
+
             handler.SeedAll();
         }
     }
