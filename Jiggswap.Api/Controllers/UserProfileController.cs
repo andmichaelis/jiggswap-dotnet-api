@@ -15,33 +15,32 @@ namespace Jiggswap.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class UserProfilesController : BaseJiggswapController
+    public class UserProfileController : BaseJiggswapController
     {
         private readonly ICurrentUserService _currentUserService;
 
-        public UserProfilesController(ICurrentUserService currentUserService, IMediator mediator) : base(mediator)
+        public UserProfileController(ICurrentUserService currentUserService, IMediator mediator) : base(mediator)
         {
             _currentUserService = currentUserService;
         }
 
         [HttpGet("{username}")]
-        public async Task<ActionResult<PublicProfileResult>> GetPublicProfile([FromRoute] string username)
+        public async Task<ActionResult<PublicProfileDto>> GetPublicProfile([FromRoute] string username)
         {
             var result = await Mediator.Send(new GetPublicProfileQuery(username)).ConfigureAwait(false);
 
             return result;
         }
 
-        [HttpGet("{username}/private")]
+        [HttpGet("")]
         [Authorize]
-        public async Task<ActionResult<PrivateProfileDto>> GetPrivateProfile([FromRoute] string username)
+        public async Task<ActionResult<PrivateProfileDto>> GetPrivateProfile()
         {
-            if (username != _currentUserService.Username)
-            {
-                return BadRequest("Can't view private profiles of other users.");
-            }
-
-            return await Mediator.Send(new GetPrivateProfileQuery(username)).ConfigureAwait(false);
+            return await Mediator.Send(
+                new GetPrivateProfileQuery
+                {
+                    UserId = _currentUserService.InternalUserId
+                });
         }
 
         [HttpPut("{username}")]
