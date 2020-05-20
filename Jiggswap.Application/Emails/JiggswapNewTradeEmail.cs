@@ -39,9 +39,7 @@ namespace Jiggswap.Application.Emails
                     puzInitBrand: tradeDetails.InitiatorPuzzleBrand,
                     puzInitImageUrl: $"{_sendGridBaseUrl}/image/{tradeDetails.InitiatorPuzzleImageId}",
 
-                    tradeAcceptUrl: $"{_sendGridBaseUrl}/trade/view?t={tradeDetails.TradeId}&act=accept",
-                    tradeDeclineUrl: $"{_sendGridBaseUrl}/trade/view?t={tradeDetails.TradeId}&act=decline",
-                    tradeViewUrl: $"{_sendGridBaseUrl}/trade/view?t={tradeDetails.TradeId}"
+                    tradeViewUrl: $"{_sendGridBaseUrl}/trades"
                 )
             });
         }

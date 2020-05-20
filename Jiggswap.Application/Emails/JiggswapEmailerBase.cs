@@ -17,6 +17,8 @@ namespace Jiggswap.Application.Emails
         public string PlainContent { get; set; }
 
         public EmailAddress ToEmail { get; set; }
+
+        public EmailAddress ReplyTo { get; set; }
     }
 
     public class JiggswapTemplateEmail
@@ -26,6 +28,8 @@ namespace Jiggswap.Application.Emails
         public object TemplateData { get; set; }
 
         public EmailAddress ToEmail { get; set; }
+
+        public EmailAddress ReplyTo { get; set; }
     }
 
     public interface IJiggswapEmailerBase
@@ -69,6 +73,12 @@ namespace Jiggswap.Application.Emails
                 </html>";
 
             var msg = MailHelper.CreateSingleEmail(from, notification.ToEmail, notification.Subject, notification.PlainContent, html);
+
+            if (notification.ReplyTo != null)
+            {
+                msg.SetReplyTo(notification.ReplyTo);
+            }
+
             if (_useRealEmails)
             {
                 return sendGridClient.SendEmailAsync(msg);
@@ -86,6 +96,12 @@ namespace Jiggswap.Application.Emails
             var from = new EmailAddress(_sendGridFromEmail, _sendGridFromName);
 
             var msg = MailHelper.CreateSingleTemplateEmail(from, notification.ToEmail, notification.TemplateId, notification.TemplateData);
+
+            if (notification.ReplyTo != null)
+            {
+                msg.SetReplyTo(notification.ReplyTo);
+            }
+
             if (_useRealEmails)
             {
                 return sendGridClient.SendEmailAsync(msg);

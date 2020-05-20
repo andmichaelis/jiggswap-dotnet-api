@@ -34,7 +34,7 @@ namespace Jiggswap.Application.Trades.Commands
 
             RuleFor(v => v.RequestedPuzzleId)
                 .MustAsync(NotBeOwnedByCurrentUser)
-                .WithMessage("You already own the requested puzzle.");
+                .WithMessage("You can't start a trade with yourself.");
 
             RuleFor(_ => currentUser).SetValidator(addressValidator);
         }

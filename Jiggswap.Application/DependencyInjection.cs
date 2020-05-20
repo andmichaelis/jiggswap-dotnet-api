@@ -25,7 +25,7 @@ namespace Jiggswap.Application
             services.AddTransient<IJiggswapEmailerBase, JiggswapEmailerBase>();
             services.AddTransient<IJiggswapForgotPasswordEmail, JiggswapForgotPasswordEmail>();
             services.AddTransient<IJiggswapNewTradeEmail, JiggswapNewTradeEmail>();
-
+            services.AddTransient<IJiggswapFeedbackEmail, JiggswapFeedbackEmail>();
             return services;
         }
     }
