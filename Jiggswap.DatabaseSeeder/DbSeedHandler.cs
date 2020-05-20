@@ -81,6 +81,8 @@ namespace Jiggswap.DatabaseSeeder
                 _puzSeeder.CreateRandomPuzzleForUser(Doglover);
             }
 
+            _puzSeeder.CreateRandomPuzzleForUser(NoProfile);
+
             _tradeSeeder.CreateTrade(Wheelworks.Puzzles[0], Hyperethics.Puzzles[0]);
             _tradeSeeder.CreateTrade(Wheelworks.Puzzles[0], Hyperethics.Puzzles[1]);
             _tradeSeeder.CreateTrade(Wheelworks.Puzzles[0], Doglover.Puzzles[0]);

@@ -44,9 +44,6 @@ namespace Jiggswap.DatabaseSeeder.Seeders
                 values
                 (@InitiatorPuzzleId, @InitiatorUserId,
                  @RequestedPuzzleId, @RequestedUserId)", trade);
-
-            _db.Query("update puzzles set is_in_trade = true where id = @Id", new { requestedPuzzle.Id });
-            _db.Query("update puzzles set is_in_trade = true where id = @Id", new { initiatorPuzzle.Id });
         }
     }
 }
