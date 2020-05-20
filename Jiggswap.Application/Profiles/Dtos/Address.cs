@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace Jiggswap.Application.Profiles.Dtos
 {
@@ -29,11 +26,20 @@ namespace Jiggswap.Application.Profiles.Dtos
         public AddressValidator()
         {
             RuleFor(v => v.State)
-                .NotEmpty()
-                .Length(2);
+                .Length(2)
+                .WithMessage("'State' is required.");
 
             RuleFor(v => v.Zip)
+                .NotEmpty()
                 .MaximumLength(10);
+
+            RuleFor(v => v.City)
+                .NotEmpty()
+                .MaximumLength(200);
+
+            RuleFor(v => v.StreetAddress)
+                .NotEmpty()
+                .MaximumLength(250);
         }
     }
 }

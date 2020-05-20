@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using FluentValidation;
@@ -20,6 +16,20 @@ namespace Jiggswap.Application.Profiles.Commands
         public SaveProfileCommandValidator(AddressValidator addressValidator)
         {
             RuleFor(v => v).SetValidator(addressValidator);
+
+            RuleFor(v => v.FirstName)
+                .Cascade(CascadeMode.StopOnFirstFailure)
+                .NotEmpty()
+                .MaximumLength(50)
+                .Matches("^[a-zA-Z]+$")
+                .WithMessage("'First Name' can only contain letters.");
+
+            RuleFor(v => v.LastName)
+                .Cascade(CascadeMode.StopOnFirstFailure)
+                .NotEmpty()
+                .MaximumLength(50)
+                .Matches("^[a-zA-Z]+$")
+                .WithMessage("'Last Name' can only contain letters.");
         }
     }
 
@@ -46,8 +56,8 @@ namespace Jiggswap.Application.Profiles.Commands
             using var conn = _db.GetConnection();
 
             const string updateSql = @"
-                update user_profiles 
-                set 
+                update user_profiles
+                set
                     FirstName = @FirstName,
                     LastName = @LastName,
                     StreetAddress = @StreetAddress,
