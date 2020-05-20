@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Jiggswap.Application.Emails
@@ -39,12 +39,16 @@ namespace Jiggswap.Application.Emails
         private readonly string _sendGridFromName;
         protected readonly string _sendGridBaseUrl;
 
+        private readonly bool _useRealEmails;
+
         public JiggswapEmailerBase(IConfiguration config)
         {
             _sendGridApiKey = config["Notifications:SendGridApiKey"];
             _sendGridFromEmail = config["Notifications:FromEmail"];
             _sendGridFromName = config["Notifications:FromName"];
             _sendGridBaseUrl = config["Notifications:BaseUrl"];
+
+            _useRealEmails = bool.Parse(config["Notifications:UseRealEmails"]);
         }
 
         protected Task<Response> SendHtmlEmail(JiggswapHtmlEmail notification)
@@ -65,7 +69,15 @@ namespace Jiggswap.Application.Emails
                 </html>";
 
             var msg = MailHelper.CreateSingleEmail(from, notification.ToEmail, notification.Subject, notification.PlainContent, html);
-            return sendGridClient.SendEmailAsync(msg);
+            if (_useRealEmails)
+            {
+                return sendGridClient.SendEmailAsync(msg);
+            }
+
+            Console.WriteLine("Email not sent due to configuration:");
+            Console.WriteLine(html);
+
+            return Task.FromResult(new Response(HttpStatusCode.OK, null, null));
         }
 
         protected Task<Response> SendTemplateEmail(JiggswapTemplateEmail notification)
@@ -74,7 +86,14 @@ namespace Jiggswap.Application.Emails
             var from = new EmailAddress(_sendGridFromEmail, _sendGridFromName);
 
             var msg = MailHelper.CreateSingleTemplateEmail(from, notification.ToEmail, notification.TemplateId, notification.TemplateData);
-            return sendGridClient.SendEmailAsync(msg);
+            if (_useRealEmails)
+            {
+                return sendGridClient.SendEmailAsync(msg);
+            }
+
+            Console.WriteLine("Template email not sent due to config");
+
+            return Task.FromResult(new Response(HttpStatusCode.OK, null, null));
         }
     }
 }
