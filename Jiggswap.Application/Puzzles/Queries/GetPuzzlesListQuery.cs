@@ -86,12 +86,13 @@ namespace Jiggswap.Application.Puzzles.Queries
         {
             var clauses = new List<string>();
 
-            if (request.IncludeActiveTrades == false)
+            if (!request.IncludeActiveTrades.GetValueOrDefault(false))
             {
                 clauses.Add("P.is_in_trade = false");
             }
 
-            return string.Join(" and ", clauses);
+            return @"
+            where " + string.Join(" and ", clauses);
         }
     }
 }
