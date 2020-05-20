@@ -60,8 +60,8 @@ namespace Jiggswap.Application.Trades.Queries
                     Trades T
                     join users IU on IU.id = T.initiator_user_id
                     join users RU on RU.id = T.requested_user_id
-                    join user_profiles IUP on IUP.user_id = T.initiator_user_id
-                    join user_profiles RUP on RUP.user_id = T.requested_user_id
+                    left outer join user_profiles IUP on IUP.user_id = T.initiator_user_id
+                    left outer join user_profiles RUP on RUP.user_id = T.requested_user_id
                     join puzzles IP on IP.id = T.initiator_puzzle_id
                     join puzzles RP on RP.id = T.requested_puzzle_id
                 where
