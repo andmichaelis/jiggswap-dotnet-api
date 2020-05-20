@@ -5,8 +5,6 @@ using Jiggswap.Application.Common.Interfaces;
 using Jiggswap.Application.Trades.Dtos;
 using MediatR;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 

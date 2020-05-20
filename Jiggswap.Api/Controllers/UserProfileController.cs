@@ -34,15 +34,10 @@ namespace Jiggswap.Api.Controllers
                 new GetPrivateProfileQuery { UserId = _currentUserService.InternalUserId });
         }
 
-        [HttpPut("{username}")]
+        [HttpPut()]
         [Authorize]
-        public async Task<ActionResult<bool>> SaveProfile([FromRoute] string username, [FromBody] SaveProfileCommand command)
+        public async Task<ActionResult<bool>> SaveProfile([FromBody] SaveProfileCommand command)
         {
-            if (username != _currentUserService.Username)
-            {
-                return BadRequest("Can't update other users.");
-            }
-
             var result = await Mediator.Send(command).ConfigureAwait(false);
 
             return Ok(result);
