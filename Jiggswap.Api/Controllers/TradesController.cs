@@ -25,6 +25,14 @@ namespace Jiggswap.Api.Controllers
             _newTradeEmailer = newTradeEmail;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<string>> GetTrades()
+        {
+            var result = await Mediator.Send(new GetTradesForUserQuery { InternalUserId = _currentUserService.InternalUserId });
+
+            return Ok(result);
+        }
+
         [HttpPost]
         public async Task<ActionResult<Guid>> CreateTrade([FromBody] CreateTradeCommand request)
         {
@@ -37,14 +45,6 @@ namespace Jiggswap.Api.Controllers
             _ = await _newTradeEmailer.SendNewTradeEmail(recipientEmail, tradeDetails);
 
             return Ok(tradeId);
-        }
-
-        [HttpGet]
-        public async Task<ActionResult<string>> GetTrades()
-        {
-            var result = await Mediator.Send(new GetTradesForUserQuery { InternalUserId = _currentUserService.InternalUserId });
-
-            return Ok(result);
         }
 
         [HttpPost("accept")]
@@ -67,6 +67,22 @@ namespace Jiggswap.Api.Controllers
         public async Task<ActionResult> DeclineTrade(DeclineTradeCommand request)
         {
             _ = await Mediator.Send(request);
+
+            return Ok();
+        }
+
+        [HttpPost("shipped")]
+        public async Task<ActionResult> ShippedTradePuzzle(ShippedTradeCommand command)
+        {
+            _ = await Mediator.Send(command);
+
+            return Ok();
+        }
+
+        [HttpPost("received")]
+        public async Task<ActionResult> ReceivedTradePuzzle(ReceivedTradeCommand command)
+        {
+            _ = await Mediator.Send(command);
 
             return Ok();
         }

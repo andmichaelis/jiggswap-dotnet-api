@@ -44,5 +44,15 @@ namespace Jiggswap.Application.Trades.Dtos
 
         public string RequestedPuzzleNumPiecesMissing { get; set; }
         public string InitiatorPuzzleNumPiecesMissing { get; set; }
+
+        /* Shipment / Status Details */
+        public string InitiatorPuzzleStatus { get; set; }
+        public string RequestedPuzzleStatus { get; set; }
+
+        public string InitiatorPuzzleShippedVia { get; set; }
+        public string RequestedPuzzleShippedVia { get; set; }
+
+        public string InitiatorPuzzleShippedTrackingNo { get; set; }
+        public string RequestedPuzzleShippedTrackingNo { get; set; }
     }
 }

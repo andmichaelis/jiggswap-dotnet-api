@@ -66,10 +66,10 @@ namespace Jiggswap.Application.Trades.Commands
                 update
                     trades
                 set
-                    status = @Inactive
+                    status = @Declined
                 where
                     public_id = @TradeId",
-                new { TradeStates.Inactive, request.TradeId });
+                new { TradeStates.Declined, request.TradeId });
 
             return true;
         }

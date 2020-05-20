@@ -80,7 +80,13 @@ namespace Jiggswap.Application.Trades.Commands
             using var transaction = conn.BeginTransaction();
 
             // activate the trade
-            var tradeId = await conn.QuerySingleAsync<int>("update trades set status = @Active where Public_Id = @TradeId returning id",
+            var tradeId = await conn.QuerySingleAsync<int>(@"
+                update trades
+                set
+                    status = @Active
+               where
+                    Public_Id = @TradeId
+               returning id",
                         new
                         {
                             TradeStates.Active,
@@ -97,7 +103,7 @@ namespace Jiggswap.Application.Trades.Commands
 	            from
 		            trades t
 	            where t.id = @TradeId
-            ), trades_to_inactivate as
+            ), trades_to_decline as
             (
 	            select
 		            id
@@ -114,12 +120,12 @@ namespace Jiggswap.Application.Trades.Commands
 		            where t2.id != @TradeId
             )
             update trades tu
-            set status = @Inactive
-            where tu.id in (select id from trades_to_inactivate)",
+            set status = @Declined
+            where tu.id in (select id from trades_to_decline)",
                                 new
                                 {
                                     TradeId = tradeId,
-                                    TradeStates.Inactive
+                                    TradeStates.Declined
                                 }
             );
 
@@ -135,7 +141,7 @@ namespace Jiggswap.Application.Trades.Commands
                 )
                 update puzzles
                 set is_in_trade = true
-                where id in (select pid from trade_puzzles )",
+                where id in ( select pid from trade_puzzles )",
                 new
                 {
                     TradeId = tradeId

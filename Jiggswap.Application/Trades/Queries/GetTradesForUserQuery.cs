@@ -55,7 +55,13 @@ namespace Jiggswap.Application.Trades.Queries
                     IP.num_pieces InitiatorPuzzleNumPieces,
                     RP.num_pieces RequestedPuzzleNumPieces,
                     IP.num_pieces_missing InitiatorPuzzleNumPiecesMissing,
-                    RP.num_pieces_missing RequestedPuzzleNumPiecesMissing
+                    RP.num_pieces_missing RequestedPuzzleNumPiecesMissing,
+                    T.initiator_puzzle_status InitiatorPuzzleStatus,
+                    T.requested_puzzle_status RequestedPuzzleStatus,
+                    T.initiator_puzzle_shipped_via InitiatorPuzzleShippedVia,
+                    T.requested_puzzle_shipped_via RequestedPuzzleShippedVia,
+                    T.initiator_puzzle_shipped_trackingno InitiatorPuzzleShippedTrackingNo,
+                    T.requested_puzzle_shipped_trackingno RequestedPuzzleShippedTrackingNo
                 from
                     Trades T
                     join users IU on IU.id = T.initiator_user_id
@@ -66,11 +72,11 @@ namespace Jiggswap.Application.Trades.Queries
                     join puzzles RP on RP.id = T.requested_puzzle_id
                 where
                     (T.initiator_user_id = @UserId or T.requested_user_id = @UserId)
-                    and (T.status != @Inactive)",
+                    and (T.status in (@Proposed, @Active))",
                 new
                 {
                     TradeStates.Active,
-                    TradeStates.Inactive,
+                    TradeStates.Proposed,
                     UserId = request.InternalUserId
                 }).ConfigureAwait(false);
 

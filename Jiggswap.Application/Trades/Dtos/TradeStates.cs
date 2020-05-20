@@ -8,8 +8,12 @@ namespace Jiggswap.Application.Trades.Dtos
     {
         public const string Active = "active";
 
-        public const string Inactive = "inactive";
-
         public const string Proposed = "proposed";
+
+        public const string Canceled = "canceled";
+
+        public const string Declined = "declined";
+
+        public const string Completed = "completed";
     }
 }

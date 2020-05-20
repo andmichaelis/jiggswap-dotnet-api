@@ -73,10 +73,10 @@ namespace Jiggswap.Application.Trades.Commands
         {
             using var conn = _db.GetConnection();
 
-            _ = await conn.ExecuteAsync("update trades set status = @Inactive where Public_Id = @TradeId",
+            _ = await conn.ExecuteAsync("update trades set status = @Canceled where Public_Id = @TradeId",
                 new
                 {
-                    TradeStates.Inactive,
+                    TradeStates.Canceled,
                     request.TradeId
                 });
 
