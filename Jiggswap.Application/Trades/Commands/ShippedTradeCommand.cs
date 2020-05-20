@@ -15,6 +15,10 @@ namespace Jiggswap.Application.Trades.Commands
     public class ShippedTradeCommand : IRequest<bool>
     {
         public Guid TradeId { get; set; }
+
+        public string Carrier { get; set; }
+
+        public string TrackingNumber { get; set; }
     }
 
     public class ShippedTradeCommandValidator : AbstractValidator<ShippedTradeCommand>
@@ -26,6 +30,10 @@ namespace Jiggswap.Application.Trades.Commands
         {
             _db = db;
             _currentUser = currentUser;
+
+            RuleFor(v => v.Carrier)
+                .NotEmpty()
+                .WithMessage("Please enter which Shipping Carrier you used.");
 
             RuleFor(v => v.TradeId)
                 .MustAsync(IncludeCurrentUser);
@@ -79,25 +87,35 @@ namespace Jiggswap.Application.Trades.Commands
             {
                 await conn.QueryAsync(@"
                     update trades
-                    set initiator_puzzle_status = @Shipped
+                    set
+                        initiator_puzzle_status = @Shipped,
+                        initiator_puzzle_shipped_via = @Carrier,
+                        initiator_puzzle_shipped_trackingno = @TrackingNumber
                     where public_id = @TradeId",
                     new
                     {
+                        PuzzleShipmentStates.Shipped,
+                        request.Carrier,
+                        request.TrackingNumber,
                         request.TradeId,
-                        PuzzleShipmentStates.Shipped
                     });
             }
             else
             {
                 await conn.QueryAsync(@"
                     update trades
-                    set requested_puzzle_status = @Shipped
+                    set
+                        requested_puzzle_status = @Shipped,
+                        requested_puzzle_shipped_via = @Carrier,
+                        requested_puzzle_shipped_trackingno = @TrackingNumber
                     where public_id = @TradeId
                 ",
                 new
                 {
+                    PuzzleShipmentStates.Shipped,
+                    request.Carrier,
+                    request.TrackingNumber,
                     request.TradeId,
-                    PuzzleShipmentStates.Shipped
                 });
             }
 
