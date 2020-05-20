@@ -37,10 +37,7 @@ namespace JiggswapApi.Controllers
                 username = await Mediator.Send(new GetUsernameFromEmailQuery(request.UsernameOrEmail));
             }
 
-            var result = new AuthorizedUserResponse
-            {
-                Username = username
-            };
+            var result = new AuthorizedUserResponse { Username = username };
 
             var token = _tokenBuilder.CreateToken(result);
 

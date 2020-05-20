@@ -66,7 +66,7 @@ namespace Jiggswap.DatabaseSeeder
             _userSeeder.CreateUser(Doglover);
             _userSeeder.CreateUser(NoProfile);
 
-            for (var idx = 0; idx < 5; idx++)
+            for (var idx = 0; idx < 15; idx++)
             {
                 _puzSeeder.CreateRandomPuzzleForUser(Wheelworks);
             }

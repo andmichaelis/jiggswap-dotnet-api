@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Jiggswap.Application.Puzzles.Commands;
 using Jiggswap.Application.Puzzles.Queries;
@@ -41,7 +40,7 @@ namespace Jiggswap.Api.Controllers
         {
             var result = await Mediator.Send(command).ConfigureAwait(false);
 
-            await Mediator.Send(new CreatePuzzleImageCommand
+            _ = await Mediator.Send(new CreatePuzzleImageCommand
             {
                 PuzzleId = result,
                 ImageBlob = command.ImageBlob
@@ -57,7 +56,7 @@ namespace Jiggswap.Api.Controllers
 
             var result = await Mediator.Send(command).ConfigureAwait(false);
 
-            await Mediator.Send(new CreatePuzzleImageCommand
+            _ = await Mediator.Send(new CreatePuzzleImageCommand
             {
                 PuzzleId = result,
                 ImageBlob = command.ImageBlob

@@ -30,14 +30,11 @@ namespace Jiggswap.Api.Controllers
         {
             var tradeId = await Mediator.Send(request).ConfigureAwait(false);
 
-            var tradeDetails = await Mediator.Send(new GetTradeDetailsQuery
-            {
-                TradeId = tradeId
-            });
+            var tradeDetails = await Mediator.Send(new GetTradeDetailsQuery { TradeId = tradeId });
 
             var recipientEmail = await Mediator.Send(new GetUserEmailFromUsernameQuery(tradeDetails.RequestedUsername));
 
-            await _newTradeEmailer.SendNewTradeEmail(recipientEmail, tradeDetails);
+            _ = await _newTradeEmailer.SendNewTradeEmail(recipientEmail, tradeDetails);
 
             return Ok(tradeId);
         }
@@ -45,10 +42,7 @@ namespace Jiggswap.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<string>> GetTrades()
         {
-            var result = await Mediator.Send(new GetTradesForUserQuery
-            {
-                InternalUserId = _currentUserService.InternalUserId
-            }).ConfigureAwait(false);
+            var result = await Mediator.Send(new GetTradesForUserQuery { InternalUserId = _currentUserService.InternalUserId });
 
             return Ok(result);
         }
@@ -56,7 +50,7 @@ namespace Jiggswap.Api.Controllers
         [HttpPost("accept")]
         public async Task<ActionResult<bool>> AcceptTrade(AcceptTradeCommand request)
         {
-            await Mediator.Send(request);
+            _ = await Mediator.Send(request);
 
             return Ok();
         }
@@ -64,7 +58,7 @@ namespace Jiggswap.Api.Controllers
         [HttpPost("cancel")]
         public async Task<ActionResult> CancelTrade(CancelTradeCommand request)
         {
-            await Mediator.Send(request);
+            _ = await Mediator.Send(request);
 
             return Ok();
         }
@@ -72,7 +66,7 @@ namespace Jiggswap.Api.Controllers
         [HttpPost("decline")]
         public async Task<ActionResult> DeclineTrade(DeclineTradeCommand request)
         {
-            await Mediator.Send(request);
+            _ = await Mediator.Send(request);
 
             return Ok();
         }

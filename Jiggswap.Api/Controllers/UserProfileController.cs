@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Jiggswap.Api.Services;
+﻿using System.Threading.Tasks;
 using Jiggswap.Application.Common.Interfaces;
 using Jiggswap.Application.Profiles.Commands;
 using Jiggswap.Application.Profiles.Dtos;
@@ -27,9 +23,7 @@ namespace Jiggswap.Api.Controllers
         [HttpGet("{username}")]
         public async Task<ActionResult<PublicProfileDto>> GetPublicProfile([FromRoute] string username)
         {
-            var result = await Mediator.Send(new GetPublicProfileQuery(username)).ConfigureAwait(false);
-
-            return result;
+            return await Mediator.Send(new GetPublicProfileQuery(username)).ConfigureAwait(false);
         }
 
         [HttpGet("")]
@@ -37,10 +31,7 @@ namespace Jiggswap.Api.Controllers
         public async Task<ActionResult<PrivateProfileDto>> GetPrivateProfile()
         {
             return await Mediator.Send(
-                new GetPrivateProfileQuery
-                {
-                    UserId = _currentUserService.InternalUserId
-                });
+                new GetPrivateProfileQuery { UserId = _currentUserService.InternalUserId });
         }
 
         [HttpPut("{username}")]

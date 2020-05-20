@@ -1,7 +1,4 @@
 ﻿using FluentMigrator;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Jiggswap.Migrations.Migrations
 {
@@ -10,7 +7,7 @@ namespace Jiggswap.Migrations.Migrations
     {
         public override void Up()
         {
-            Create
+            _ = Create
                 .Column("is_in_trade")
                 .OnTable("puzzles")
                 .AsBoolean()
@@ -19,7 +16,7 @@ namespace Jiggswap.Migrations.Migrations
 
         public override void Down()
         {
-            Delete
+            _ = Delete
                 .Column("is_in_trade")
                 .FromTable("puzzles");
         }

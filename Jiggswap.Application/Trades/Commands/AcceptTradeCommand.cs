@@ -6,8 +6,6 @@ using Jiggswap.Application.Common.Validation;
 using Jiggswap.Application.Trades.Dtos;
 using MediatR;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,7 +26,7 @@ namespace Jiggswap.Application.Trades.Commands
             _db = db;
             _currentUser = currentUser;
 
-            RuleFor(t => t.TradeId)
+            _ = RuleFor(t => t.TradeId)
                 .Cascade(CascadeMode.StopOnFirstFailure)
                 .NotEmpty()
 
@@ -38,7 +36,7 @@ namespace Jiggswap.Application.Trades.Commands
                 .MustAsync(BeSentToCurrentUser)
                 .WithMessage("You are not the recipient of this trade.");
 
-            RuleFor(_ => currentUser).SetValidator(addressValidator);
+            _ = RuleFor(_ => currentUser).SetValidator(addressValidator);
         }
 
         private async Task<bool> BeProposedTrade(Guid id, CancellationToken cancel)
@@ -83,14 +81,14 @@ namespace Jiggswap.Application.Trades.Commands
 
             // activate the trade
             var tradeId = await conn.QuerySingleAsync<int>("update trades set status = @Active where Public_Id = @TradeId returning id",
-            new
-            {
-                TradeStates.Active,
-                request.TradeId
-            });
+                        new
+                        {
+                            TradeStates.Active,
+                            request.TradeId
+                        });
 
             // inactivate other trades containing these puzzles
-            await conn.QueryAsync(@"
+            _ = await conn.QueryAsync(@"
             with trade_info as
             (
 	            select
@@ -118,15 +116,15 @@ namespace Jiggswap.Application.Trades.Commands
             update trades tu
             set status = @Inactive
             where tu.id in (select id from trades_to_inactivate)",
-                new
-                {
-                    TradeId = tradeId,
-                    TradeStates.Inactive
-                }
+                                new
+                                {
+                                    TradeId = tradeId,
+                                    TradeStates.Inactive
+                                }
             );
 
             // set puzzles is_in_trade = true
-            await conn.QueryAsync(@"
+            _ = await conn.QueryAsync(@"
                 with trade_puzzles as
                 (
 	                select initiator_puzzle_id pid

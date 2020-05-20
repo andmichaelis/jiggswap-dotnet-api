@@ -5,8 +5,6 @@ using Jiggswap.Application.Common.Interfaces;
 using Jiggswap.Application.Trades.Dtos;
 using MediatR;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,7 +25,7 @@ namespace Jiggswap.Application.Trades.Commands
             _currentUser = currentUser;
             _db = db;
 
-            RuleFor(t => t.TradeId)
+            _ = RuleFor(t => t.TradeId)
                 .MustAsync(BeSentToCurrentUser)
                 .WithMessage("You are not a member of this trade or it is not longer proposed");
         }
@@ -41,11 +39,11 @@ namespace Jiggswap.Application.Trades.Commands
                     T.requested_user_id
                 from trades T
                 where T.public_id = @TradeId and T.status = @Proposed",
-                new
-                {
-                    TradeId = tradeId,
-                    TradeStates.Proposed
-                });
+                                new
+                                {
+                                    TradeId = tradeId,
+                                    TradeStates.Proposed
+                                });
 
             return tradeUser == _currentUser.InternalUserId;
         }
@@ -64,18 +62,14 @@ namespace Jiggswap.Application.Trades.Commands
         {
             using var conn = _db.GetConnection();
 
-            await conn.ExecuteAsync(@"
+            _ = await conn.ExecuteAsync(@"
                 update
                     trades
                 set
                     status = @Inactive
                 where
                     public_id = @TradeId",
-                 new
-                 {
-                     TradeStates.Inactive,
-                     request.TradeId
-                 });
+                new { TradeStates.Inactive, request.TradeId });
 
             return true;
         }

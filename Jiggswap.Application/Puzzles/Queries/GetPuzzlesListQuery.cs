@@ -3,7 +3,6 @@ using Jiggswap.Application.Common;
 using MediatR;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +14,8 @@ namespace Jiggswap.Application.Puzzles.Queries
         public Guid PuzzleId { get; set; }
 
         public string Title { get; set; }
+
+        public string Brand { get; set; }
 
         public int? ImageId { get; set; }
 
@@ -56,6 +57,7 @@ namespace Jiggswap.Application.Puzzles.Queries
                 select
                     P.public_id as PuzzleId,
                     P.Title,
+                    P.Brand,
                     P.image_id ImageId,
                     P.tags TagValue,
                     P.num_pieces NumPieces,
@@ -82,15 +84,14 @@ namespace Jiggswap.Application.Puzzles.Queries
 
         public static string BuildWhereClause(GetPuzzlesListQuery request)
         {
-            if (request.IncludeActiveTrades == true)
+            var clauses = new List<string>();
+
+            if (request.IncludeActiveTrades == false)
             {
-                return "";
+                clauses.Add("P.is_in_trade = false");
             }
-            else
-            {
-                return @"
-                    where P.is_in_trade = false";
-            }
+
+            return string.Join(" and ", clauses);
         }
     }
 }

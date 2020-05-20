@@ -27,7 +27,7 @@ namespace Jiggswap.Application.Trades.Commands
             _db = db;
             _currentUser = currentUser;
 
-            RuleFor(v => v.TradeId)
+            _ = RuleFor(v => v.TradeId)
                 .Cascade(CascadeMode.StopOnFirstFailure)
 
                 .MustAsync(IncludeCurrentUser)
@@ -75,7 +75,7 @@ namespace Jiggswap.Application.Trades.Commands
         {
             using var conn = _db.GetConnection();
 
-            await conn.ExecuteAsync("update trades set status = @Inactive where Public_Id = @TradeId",
+            _ = await conn.ExecuteAsync("update trades set status = @Inactive where Public_Id = @TradeId",
                 new
                 {
                     TradeStates.Inactive,

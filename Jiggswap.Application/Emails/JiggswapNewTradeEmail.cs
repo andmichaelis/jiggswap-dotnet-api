@@ -25,25 +25,24 @@ namespace Jiggswap.Application.Emails
             {
                 ToEmail = new EmailAddress(recipientEmail),
                 TemplateId = TemplateId,
-                TemplateData = new
-                {
-                    userInitName = tradeDetails.InitiatorUsername,
-                    userRcpName = tradeDetails.RequestedUsername,
+                TemplateData = (
+                    userInitName: tradeDetails.InitiatorUsername,
+                    userRcpName: tradeDetails.RequestedUsername,
 
-                    puzRcpName = tradeDetails.RequestedPuzzleTitle,
-                    puzRcpPcs = tradeDetails.RequestedPuzzlePieces,
-                    puzRcpBrand = tradeDetails.RequestedPuzzleBrand,
-                    puzRcpImageUrl = $"{_sendGridBaseUrl}/image/{tradeDetails.RequestedPuzzleImageId}",
+                    puzRcpName: tradeDetails.RequestedPuzzleTitle,
+                    puzRcpPcs: tradeDetails.RequestedPuzzleNumPieces,
+                    puzRcpBrand: tradeDetails.RequestedPuzzleBrand,
+                    puzRcpImageUrl: $"{_sendGridBaseUrl}/image/{tradeDetails.RequestedPuzzleImageId}",
 
-                    puzInitName = tradeDetails.InitiatorPuzzleTitle,
-                    puzInitPcs = tradeDetails.InitiatorPuzzlePieces,
-                    puzInitBrand = tradeDetails.InitiatorPuzzleBrand,
-                    puzInitImageUrl = $"{_sendGridBaseUrl}/image/{tradeDetails.InitiatorPuzzleImageId}",
+                    puzInitName: tradeDetails.InitiatorPuzzleTitle,
+                    puzInitPcs: tradeDetails.InitiatorPuzzleNumPieces,
+                    puzInitBrand: tradeDetails.InitiatorPuzzleBrand,
+                    puzInitImageUrl: $"{_sendGridBaseUrl}/image/{tradeDetails.InitiatorPuzzleImageId}",
 
-                    tradeAcceptUrl = $"{_sendGridBaseUrl}/trade/view?t={tradeDetails.TradeId}&act=accept",
-                    tradeDeclineUrl = $"{_sendGridBaseUrl}/trade/view?t={tradeDetails.TradeId}&act=decline",
-                    tradeViewUrl = $"{_sendGridBaseUrl}/trade/view?t={tradeDetails.TradeId}"
-                }
+                    tradeAcceptUrl: $"{_sendGridBaseUrl}/trade/view?t={tradeDetails.TradeId}&act=accept",
+                    tradeDeclineUrl: $"{_sendGridBaseUrl}/trade/view?t={tradeDetails.TradeId}&act=decline",
+                    tradeViewUrl: $"{_sendGridBaseUrl}/trade/view?t={tradeDetails.TradeId}"
+                )
             });
         }
     }

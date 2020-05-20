@@ -20,6 +20,8 @@ namespace Jiggswap.Application.Puzzles.Queries
 
         public string Title { get; set; }
 
+        public string Brand { get; set; }
+
         public int NumPieces { get; set; }
 
         public int NumPiecesMissing { get; set; }
@@ -50,7 +52,7 @@ namespace Jiggswap.Application.Puzzles.Queries
     {
         public GetPuzzleDetailsQueryValidator()
         {
-            RuleFor(v => v.PuzzleId)
+            _ = RuleFor(v => v.PuzzleId)
                 .NotNull();
         }
     }
@@ -74,6 +76,7 @@ namespace Jiggswap.Application.Puzzles.Queries
                     select
                         P.Public_Id as PuzzleId,
                         P.Title,
+                        P.Brand,
                         P.Num_Pieces NumPieces,
                         P.Num_Pieces_Missing NumPiecesMissing,
                         P.Additional_Notes AdditionalNotes,
