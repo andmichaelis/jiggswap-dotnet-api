@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Jiggswap.Application.Common;
 using Jiggswap.Application.Trades.Dtos;
+using Jiggswap.Domain.Trades;
 using MediatR;
 
 namespace Jiggswap.Application.Trades.Queries

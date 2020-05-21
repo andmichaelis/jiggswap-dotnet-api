@@ -22,7 +22,7 @@ namespace Jiggswap.Application.Emails
 
         public async Task<Response> SendForgotPasswordEmail(string email, string token)
         {
-            var resetUrl = $"{_sendGridBaseUrl}/reset-password?key={token}";
+            var resetUrl = $"{_sendGridBaseWebUrl}/reset-password?key={token}";
 
             return await SendHtmlEmail(new JiggswapHtmlEmail
             {

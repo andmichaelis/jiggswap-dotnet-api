@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Jiggswap.Application.Trades.Dtos
+namespace Jiggswap.Domain.Trades
 {
     public class TradeDetailsDto
     {

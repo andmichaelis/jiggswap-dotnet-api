@@ -3,6 +3,7 @@ using Jiggswap.Api.Configuration;
 using Jiggswap.Api.Services;
 using Jiggswap.Application;
 using Jiggswap.Application.Common.Interfaces;
+using Jiggswap.RazorViewEngine;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -29,6 +30,7 @@ namespace JiggswapApi
             services.AddTransient<IJiggswapCache, JiggswapCache>();
 
             services.AddJiggswapApplication(Configuration);
+            services.AddJiggswapRazorViewEngine();
 
             services.AddHttpContextAccessor();
 
@@ -40,6 +42,8 @@ namespace JiggswapApi
 
             services.AddControllers()
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<ICurrentUserService>());
+
+            services.AddRazorPages();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -62,7 +66,11 @@ namespace JiggswapApi
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => endpoints.MapControllers());
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapRazorPages();
+            });
         }
     }
 }
