@@ -22,10 +22,8 @@ namespace Jiggswap.Application
             services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(config.GetConnectionString("JiggswapRedis")));
             services.AddTransient<IJiggswapRedisConnection, JiggswapRedisConnection>();
 
-            services.AddTransient<IJiggswapEmailerBase, JiggswapEmailerBase>();
-            services.AddTransient<IJiggswapForgotPasswordEmail, JiggswapForgotPasswordEmail>();
-            services.AddTransient<IJiggswapNewTradeEmail, JiggswapNewTradeEmail>();
-            services.AddTransient<IJiggswapContactEmail, JiggswapContactEmail>();
+            services.AddTransient<IJiggswapEmailer, JiggswapEmailer>();
+
             return services;
         }
     }

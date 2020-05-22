@@ -36,7 +36,7 @@ namespace Jiggswap.Api.Controllers
         }
 
         [HttpPost("")]
-        public async Task<ActionResult> CreatePuzzle([FromForm] CreatePuzzleCommand command)
+        public async Task<ActionResult<Guid>> CreatePuzzle([FromForm] CreatePuzzleCommand command)
         {
             var result = await Mediator.Send(command).ConfigureAwait(false);
 
@@ -50,7 +50,7 @@ namespace Jiggswap.Api.Controllers
         }
 
         [HttpPost("{id}")]
-        public async Task<ActionResult> UpdatePuzzle([FromRoute] Guid id, [FromForm] UpdatePuzzleCommand command)
+        public async Task<ActionResult<Guid>> UpdatePuzzle([FromRoute] Guid id, [FromForm] UpdatePuzzleCommand command)
         {
             command.PuzzleId = id;
 
@@ -62,7 +62,7 @@ namespace Jiggswap.Api.Controllers
                 ImageBlob = command.ImageBlob
             }).ConfigureAwait(false);
 
-            return Ok(result);
+            return Ok(id);
         }
     }
 }

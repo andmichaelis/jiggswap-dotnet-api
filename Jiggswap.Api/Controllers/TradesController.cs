@@ -17,12 +17,12 @@ namespace Jiggswap.Api.Controllers
     public class TradesController : BaseJiggswapController
     {
         private readonly ICurrentUserService _currentUserService;
-        private readonly IJiggswapNewTradeEmail _newTradeEmailer;
+        private readonly IJiggswapEmailer _emailer;
 
-        public TradesController(ICurrentUserService currentUserService, IMediator mediator, IJiggswapNewTradeEmail newTradeEmail) : base(mediator)
+        public TradesController(ICurrentUserService currentUserService, IMediator mediator, IJiggswapEmailer emailer) : base(mediator)
         {
             _currentUserService = currentUserService;
-            _newTradeEmailer = newTradeEmail;
+            _emailer = emailer;
         }
 
         [HttpGet]
@@ -42,7 +42,7 @@ namespace Jiggswap.Api.Controllers
 
             var recipientEmail = await Mediator.Send(new GetUserEmailFromUsernameQuery(tradeDetails.RequestedUsername));
 
-            _ = await _newTradeEmailer.SendNewTradeEmail(recipientEmail, tradeDetails);
+            _ = _emailer.SendNewTradeEmail(recipientEmail, tradeDetails);
 
             return Ok(tradeId);
         }
@@ -51,6 +51,12 @@ namespace Jiggswap.Api.Controllers
         public async Task<ActionResult<bool>> AcceptTrade(AcceptTradeCommand request)
         {
             _ = await Mediator.Send(request);
+
+            var tradeDetails = await Mediator.Send(new GetTradeDetailsQuery { TradeId = request.TradeId });
+
+            var recipientEmail = await Mediator.Send(new GetUserEmailFromUsernameQuery(tradeDetails.InitiatorUsername));
+
+            _ = _emailer.SendAcceptedTradeEmail(recipientEmail, tradeDetails);
 
             return Ok();
         }

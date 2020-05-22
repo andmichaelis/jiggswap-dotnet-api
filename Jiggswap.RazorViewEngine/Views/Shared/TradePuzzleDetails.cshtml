@@ -19,22 +19,26 @@
             <img style="width:100%" src="@(Model.ImageUrl)" />
         </td>
     </tr>
-    <tr>
-        <td valign="top">
-            <table border="0" cellpadding="10" cellspacing="0" width="100%" style="font-size: 0.8rem">
-                <tr>
-                    <td><b>Title</b>:</td>
-                    <td>@(Model.Title)</td>
-                </tr>
-                <tr>
-                    <td><b>Brand</b>:</td>
-                    <td>@(Model.Brand)</td>
-                </tr>
-                <tr>
-                    <td><b># Pieces</b>:</td>
-                    <td>@(Model.NumPieces) (<b>@(Model.NumPiecesMissing)</b> missing)</td>
-                </tr>
-            </table>
-        </td>
-    </tr>
+
+    @if (!Model.HideDetails)
+    {
+        <tr>
+            <td valign="top">
+                <table border="0" cellpadding="10" cellspacing="0" width="100%" style="font-size: 0.8rem">
+                    <tr>
+                        <td><b>Title</b>:</td>
+                        <td>@(Model.Title)</td>
+                    </tr>
+                    <tr>
+                        <td><b>Brand</b>:</td>
+                        <td>@(Model.Brand)</td>
+                    </tr>
+                    <tr>
+                        <td><b># Pieces</b>:</td>
+                        <td>@(Model.NumPieces) (<b>@(Model.NumPiecesMissing)</b> missing)</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    }
 </table>

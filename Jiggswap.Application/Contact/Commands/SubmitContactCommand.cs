@@ -50,9 +50,9 @@ namespace Jiggswap.Application.Contact.Commands
 
     public class SubmitContactCommandHandler : IRequestHandler<SubmitContactCommand, bool>
     {
-        private readonly IJiggswapContactEmail _emailer;
+        private readonly IJiggswapEmailer _emailer;
 
-        public SubmitContactCommandHandler(IJiggswapContactEmail emailer)
+        public SubmitContactCommandHandler(IJiggswapEmailer emailer)
         {
             _emailer = emailer;
         }

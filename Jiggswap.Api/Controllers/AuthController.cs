@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Jiggswap.Application.Passwords.Commands;
-using Jiggswap.Application.Passwords.Notifications;
 using Jiggswap.Application.Users.Dtos;
 using MediatR;
+using Jiggswap.Application.Emails;
 
 namespace JiggswapApi.Controllers
 {
@@ -18,10 +18,12 @@ namespace JiggswapApi.Controllers
     public class AuthController : BaseJiggswapController
     {
         private readonly ITokenBuilder _tokenBuilder;
+        private readonly IJiggswapEmailer _emailer;
 
-        public AuthController(ITokenBuilder tokenBuilder, IMediator mediator) : base(mediator)
+        public AuthController(ITokenBuilder tokenBuilder, IMediator mediator, IJiggswapEmailer emailer) : base(mediator)
         {
             _tokenBuilder = tokenBuilder;
+            _emailer = emailer;
         }
 
         [HttpPost("authorize")]
@@ -69,11 +71,7 @@ namespace JiggswapApi.Controllers
         {
             var resetToken = await Mediator.Send(command).ConfigureAwait(false);
 
-            _ = Mediator.Publish(new ForgotPasswordNotification
-            {
-                Email = command.Email,
-                Token = resetToken
-            });
+            _ = _emailer.SendForgotPasswordEmail(command.Email, resetToken);
 
             return Ok();
         }

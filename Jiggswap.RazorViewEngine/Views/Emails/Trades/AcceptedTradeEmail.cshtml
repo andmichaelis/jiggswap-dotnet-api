@@ -1,0 +1,73 @@
+﻿@using Jiggswap.RazorViewEngine.ViewModels.Trades
+@using Jiggswap.RazorViewEngine.ViewModels.EmailCommon
+@model AcceptedTradeEmailViewModel
+
+@{
+    ViewData["EmailTitle"] = "Trade Accepted!";
+    ViewData["PreheaderText"] = $"{Model.RequestedPuzzle.OwnerUsername} has accepted your trade!";
+}
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size: 0.9rem">
+    <tr>
+        <td align="center">
+            @Model.RequestedPuzzle.OwnerUsername has accepted your trade!
+        </td>
+    </tr>
+
+    <tr>
+        <td align="center" style="font-weight: 700; font-size: 1.4rem; padding-top:20px">
+            <b>It's time to mail them your puzzle.</b>
+        </td>
+    </tr>
+</table>
+
+<div style="padding: 10px 0"></div>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px">
+    <tr>
+        <td align="center" valign="top" width="48%" style="max-width: 288px">
+            @await Html.PartialAsync("TradePuzzleDetails", Model.InitiatorPuzzle)
+        </td>
+
+        <td align="center" valign="middle" width="4%" style="max-width: 24px">
+            <span style="font-size: 2rem; width: 100%">⇄</span>
+        </td>
+        <td align="center" valign="top" width="48%" style="max-width: 288px">
+            @await Html.PartialAsync("TradePuzzleDetails", Model.RequestedPuzzle)
+        </td>
+    </tr>
+</table>
+
+<hr />
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size: 0.8rem">
+    <tr>
+        <td align="center">
+            This trade is now <b>active</b>.
+        </td>
+    </tr>
+    <tr>
+        <td align="center" style="padding-top:10px">
+            This means both users should mail their puzzle to the other.
+        </td>
+    </tr>
+
+    <tr>
+        <td align="center" style="padding-top:20px">
+            You can view @Model.RequestedPuzzle.OwnerUsername's shipping address on your Trades page:
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            @await Html.PartialAsync("EmailButton", new EmailButtonViewModel("View Trades", Model.ViewUrl))
+        </td>
+    </tr>
+</table>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <td align="center">
+            If you have any questions or issues, please get in touch with us by replying to this email.
+        </td>
+    </tr>
+</table>

@@ -22,5 +22,7 @@ namespace Jiggswap.RazorViewEngine.ViewModels.Trades
         public string ShippingFrom { get; set; }
 
         public double MaxWidth { get; set; }
+
+        public bool HideDetails { get; set; }
     }
 }

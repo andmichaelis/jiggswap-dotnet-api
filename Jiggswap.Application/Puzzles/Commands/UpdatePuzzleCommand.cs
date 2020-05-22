@@ -57,8 +57,6 @@ namespace Jiggswap.Application.Puzzles.Commands
         {
             using var conn = _db.GetConnection();
 
-            Console.WriteLine($"Brand: {request.Brand}");
-
             const string sql = @"
                 update puzzles set
                     title = @Title,

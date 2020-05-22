@@ -10,33 +10,13 @@ using System.Threading.Tasks;
 using System.Net;
 using Jiggswap.RazorViewEngine;
 using Jiggswap.RazorViewEngine.ViewModels;
+using Jiggswap.Domain.Trades;
+using Jiggswap.RazorViewEngine.ViewModels.Trades;
+using Jiggswap.RazorViewEngine.ViewModels.Feedback;
+using Jiggswap.RazorViewEngine.ViewModels.Passwords;
 
 namespace Jiggswap.Application.Emails
 {
-    public class JiggswapHtmlEmail
-    {
-        public string Subject { get; set; }
-
-        public string HtmlContent { get; set; }
-
-        public string PlainContent { get; set; }
-
-        public EmailAddress ToEmail { get; set; }
-
-        public EmailAddress ReplyTo { get; set; }
-    }
-
-    public class JiggswapTemplateEmail
-    {
-        public string TemplateId { get; set; }
-
-        public object TemplateData { get; set; }
-
-        public EmailAddress ToEmail { get; set; }
-
-        public EmailAddress ReplyTo { get; set; }
-    }
-
     public class JiggswapRenderedEmail<TModel>
     {
         public JiggswapRenderedEmail(TModel model)
@@ -53,11 +33,18 @@ namespace Jiggswap.Application.Emails
         public TModel Model { get; }
     }
 
-    public interface IJiggswapEmailerBase
+    public interface IJiggswapEmailer
     {
+        Task<Response> SendNewTradeEmail(string recipientEmail, TradeDetailsDto tradeDetails);
+
+        Task<Response> SendAcceptedTradeEmail(string recipientEmail, TradeDetailsDto tradeDetails);
+
+        Task<Response> SendContactEmail(string name, string email, string comment);
+
+        Task<Response> SendForgotPasswordEmail(string email, string token);
     }
 
-    public class JiggswapEmailerBase : IJiggswapEmailerBase
+    public class JiggswapEmailer : IJiggswapEmailer
     {
         private readonly string _sendGridApiKey;
         private readonly string _sendGridFromEmail;
@@ -69,7 +56,7 @@ namespace Jiggswap.Application.Emails
 
         private readonly IJiggswapRazorViewRenderer _razorRenderer;
 
-        public JiggswapEmailerBase(IConfiguration config, IJiggswapRazorViewRenderer razorRenderer)
+        public JiggswapEmailer(IConfiguration config, IJiggswapRazorViewRenderer razorRenderer)
         {
             _sendGridApiKey = config["Notifications:SendGridApiKey"];
             _sendGridFromEmail = config["Notifications:FromEmail"];
@@ -81,7 +68,7 @@ namespace Jiggswap.Application.Emails
             _razorRenderer = razorRenderer;
         }
 
-        protected async Task<Response> SendRazorRenderedEmail<TModel>(JiggswapRenderedEmail<TModel> notification)
+        private async Task<Response> SendRazorRenderedEmail<TModel>(JiggswapRenderedEmail<TModel> notification)
             where TModel : JiggswapEmailViewModelBase
         {
             var sendGridClient = new SendGridClient(_sendGridApiKey);
@@ -119,7 +106,7 @@ namespace Jiggswap.Application.Emails
 
             testMessage.To.Add(new MailboxAddress("test@jiggswap.com"));
 
-            if (!string.IsNullOrEmpty(msg.ReplyTo.Email))
+            if (!string.IsNullOrEmpty(msg.ReplyTo?.Email))
             {
                 testMessage.ReplyTo.Add(new MailboxAddress(msg.ReplyTo.Email));
             }
@@ -139,6 +126,58 @@ namespace Jiggswap.Application.Emails
             client.Connect("127.0.0.1", 25, false);
             client.Send(testMessage);
             client.Disconnect(true);
+        }
+
+        public async Task<Response> SendNewTradeEmail(string recipientEmail, TradeDetailsDto tradeDetails)
+        {
+            var viewModel = new NewTradeEmailViewModel(_sendGridBaseApiUrl, _sendGridBaseWebUrl, tradeDetails);
+
+            return await SendRazorRenderedEmail(new JiggswapRenderedEmail<NewTradeEmailViewModel>(viewModel)
+            {
+                Subject = $"Jiggswap - New Trade Request",
+                ToEmail = new EmailAddress(recipientEmail),
+            });
+        }
+
+        public async Task<Response> SendAcceptedTradeEmail(string recipientEmail, TradeDetailsDto tradeDetails)
+        {
+            var viewModel = new AcceptedTradeEmailViewModel(_sendGridBaseApiUrl, _sendGridBaseWebUrl, tradeDetails);
+
+            return await SendRazorRenderedEmail(new JiggswapRenderedEmail<AcceptedTradeEmailViewModel>(viewModel)
+            {
+                Subject = $"Jiggswap - Trade Accepted!",
+                ToEmail = new EmailAddress(recipientEmail),
+            });
+        }
+
+        public async Task<Response> SendContactEmail(string name, string email, string comment)
+        {
+            var viewModel = new ContactEmailViewModel
+            {
+                Name = name,
+                Email = email,
+                Comment = comment
+            };
+
+            return await SendRazorRenderedEmail(new JiggswapRenderedEmail<ContactEmailViewModel>(viewModel)
+            {
+                Subject = $"Jiggswap - Comment from {name}",
+                ToEmail = new EmailAddress("comments@jiggswap.com"),
+                ReplyTo = new EmailAddress(email)
+            });
+        }
+
+        public async Task<Response> SendForgotPasswordEmail(string email, string token)
+        {
+            var resetUrl = $"{_sendGridBaseWebUrl}/reset-password?key={token}";
+
+            var viewModel = new ForgotPasswordEmailViewModel { ResetUrl = resetUrl };
+
+            return await SendRazorRenderedEmail(new JiggswapRenderedEmail<ForgotPasswordEmailViewModel>(viewModel)
+            {
+                Subject = $"Jiggswap - Password Reset Instructions",
+                ToEmail = new EmailAddress(email),
+            });
         }
     }
 }
