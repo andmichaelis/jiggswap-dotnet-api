@@ -1,4 +1,5 @@
 ﻿using Jiggswap.RazorViewEngine;
+using Jiggswap.RazorViewEngine.ViewModels.Passwords;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using SendGrid;
@@ -25,20 +26,12 @@ namespace Jiggswap.Application.Emails
         {
             var resetUrl = $"{_sendGridBaseWebUrl}/reset-password?key={token}";
 
-            return await SendHtmlEmail(new JiggswapHtmlEmail
+            var viewModel = new ForgotPasswordEmailViewModel { ResetUrl = resetUrl };
+
+            return await SendRazorRenderedEmail(new JiggswapRenderedEmail<ForgotPasswordEmailViewModel>(viewModel)
             {
-                Subject = "Jiggswap - Password Reset Instructions",
+                Subject = $"Jiggswap - Password Reset Instructions",
                 ToEmail = new EmailAddress(email),
-                ReplyTo = new EmailAddress("help@jiggswap.com"),
-                PlainContent = $"Please use the following link to reset your password: {resetUrl}. If you have any questions, please get in touch with us by replying to this email.",
-                HtmlContent = $@"<div>
-                        Hello, <br />
-                        Please use the following link to reset your password:
-                        <hr />
-                            <a href='{resetUrl}'>Reset Jiggswap Password</a>
-                        <hr />
-                        If you have any questions, please get in touch with us by replying to this email.
-                    </div>"
             });
         }
     }

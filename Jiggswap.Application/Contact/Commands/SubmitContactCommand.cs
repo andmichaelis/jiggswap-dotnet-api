@@ -8,9 +8,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Jiggswap.Application.Feedback.Commands
+namespace Jiggswap.Application.Contact.Commands
 {
-    public class SubmitFeedbackCommand : IRequest<bool>
+    public class SubmitContactCommand : IRequest<bool>
     {
         public string Name { get; set; }
 
@@ -19,9 +19,9 @@ namespace Jiggswap.Application.Feedback.Commands
         public string Comment { get; set; }
     }
 
-    public class SubmitFeedbackValidator : AbstractValidator<SubmitFeedbackCommand>
+    public class SubmitContactCommandValidator : AbstractValidator<SubmitContactCommand>
     {
-        public SubmitFeedbackValidator()
+        public SubmitContactCommandValidator()
         {
             RuleFor(v => v.Name)
                 .NotEmpty();
@@ -48,18 +48,18 @@ namespace Jiggswap.Application.Feedback.Commands
         }
     }
 
-    public class SubmitFeedbackCommandHandler : IRequestHandler<SubmitFeedbackCommand, bool>
+    public class SubmitContactCommandHandler : IRequestHandler<SubmitContactCommand, bool>
     {
-        private readonly IJiggswapFeedbackEmail _emailer;
+        private readonly IJiggswapContactEmail _emailer;
 
-        public SubmitFeedbackCommandHandler(IJiggswapFeedbackEmail emailer)
+        public SubmitContactCommandHandler(IJiggswapContactEmail emailer)
         {
             _emailer = emailer;
         }
 
-        public async Task<bool> Handle(SubmitFeedbackCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(SubmitContactCommand request, CancellationToken cancellationToken)
         {
-            await _emailer.SendForgotPasswordEmail(request.Name, request.Email, request.Comment);
+            await _emailer.SendContactEmail(request.Name, request.Email, request.Comment);
 
             return true;
         }

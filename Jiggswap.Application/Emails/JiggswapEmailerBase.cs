@@ -81,43 +81,6 @@ namespace Jiggswap.Application.Emails
             _razorRenderer = razorRenderer;
         }
 
-        protected Task<Response> SendHtmlEmail(JiggswapHtmlEmail notification)
-        {
-            var sendGridClient = new SendGridClient(_sendGridApiKey);
-            var from = new EmailAddress(_sendGridFromEmail, _sendGridFromName);
-            var html = @$"
-                <html>
-                    <table width='100%' border='0' cellspacing='0' cellpadding='0'>
-                        <tr>
-                            <td></td>
-                            <td style='text-align:center; width: 70%'>
-                            {notification.HtmlContent}
-                            </td>
-                            <td></td>
-                        </tr>
-                    </table>
-                </html>";
-
-            var msg = MailHelper.CreateSingleEmail(from, notification.ToEmail, notification.Subject, notification.PlainContent, html);
-
-            if (notification.ReplyTo != null)
-            {
-                msg.SetReplyTo(notification.ReplyTo);
-            }
-
-            if (_useRealEmails)
-            {
-                return sendGridClient.SendEmailAsync(msg);
-            }
-
-            Console.WriteLine("Email not sent due to configuration:");
-            Console.WriteLine(html);
-
-            SendTestEmail(msg);
-
-            return Task.FromResult(new Response(HttpStatusCode.OK, null, null));
-        }
-
         protected async Task<Response> SendRazorRenderedEmail<TModel>(JiggswapRenderedEmail<TModel> notification)
             where TModel : JiggswapEmailViewModelBase
         {
@@ -155,6 +118,11 @@ namespace Jiggswap.Application.Emails
             testMessage.From.Add(new MailboxAddress(msg.From.Email));
 
             testMessage.To.Add(new MailboxAddress("test@jiggswap.com"));
+
+            if (!string.IsNullOrEmpty(msg.ReplyTo.Email))
+            {
+                testMessage.ReplyTo.Add(new MailboxAddress(msg.ReplyTo.Email));
+            }
 
             testMessage.Subject = msg.Personalizations[0].Subject;
 

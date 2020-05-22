@@ -1,0 +1,24 @@
+﻿@using Jiggswap.RazorViewEngine.ViewModels.Feedback
+@model ContactEmailViewModel
+
+@{
+    ViewData["EmailTitle"] = "New Comment Received";
+    ViewData["PreheaderText"] = $"{Model.Name} <{Model.Email}> has sent you a message.";
+}
+
+<div>
+
+    Name: @Model.Name
+</div>
+
+<div>
+    Email: @Model.Email
+</div>
+
+<div>
+    Comment:
+</div>
+<hr />
+<div>
+    @Model.Comment
+</div>
