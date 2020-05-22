@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Jiggswap.RazorViewEngine;
+using MediatR;
 using Microsoft.Extensions.Configuration;
 using SendGrid;
 using SendGrid.Helpers.Mail;
@@ -16,7 +17,7 @@ namespace Jiggswap.Application.Emails
 
     public class JiggswapForgotPasswordEmail : JiggswapEmailerBase, IJiggswapForgotPasswordEmail
     {
-        public JiggswapForgotPasswordEmail(IConfiguration config) : base(config)
+        public JiggswapForgotPasswordEmail(IConfiguration config, IJiggswapRazorViewRenderer razorRenderer) : base(config, razorRenderer)
         {
         }
 

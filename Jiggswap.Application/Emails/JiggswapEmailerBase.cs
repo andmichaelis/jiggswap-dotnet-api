@@ -8,6 +8,8 @@ using SendGrid.Helpers.Mail;
 using System;
 using System.Threading.Tasks;
 using System.Net;
+using Jiggswap.RazorViewEngine;
+using Jiggswap.RazorViewEngine.ViewModels;
 
 namespace Jiggswap.Application.Emails
 {
@@ -35,17 +37,20 @@ namespace Jiggswap.Application.Emails
         public EmailAddress ReplyTo { get; set; }
     }
 
-    public class JiggswapRenderedEmail
+    public class JiggswapRenderedEmail<TModel>
     {
+        public JiggswapRenderedEmail(TModel model)
+        {
+            Model = model;
+        }
+
         public string Subject { get; set; }
-
-        public string HtmlContent { get; set; }
-
-        public string PlainContent { get; set; }
 
         public EmailAddress ToEmail { get; set; }
 
         public EmailAddress ReplyTo { get; set; }
+
+        public TModel Model { get; }
     }
 
     public interface IJiggswapEmailerBase
@@ -62,7 +67,9 @@ namespace Jiggswap.Application.Emails
 
         private readonly bool _useRealEmails;
 
-        public JiggswapEmailerBase(IConfiguration config)
+        private readonly IJiggswapRazorViewRenderer _razorRenderer;
+
+        public JiggswapEmailerBase(IConfiguration config, IJiggswapRazorViewRenderer razorRenderer)
         {
             _sendGridApiKey = config["Notifications:SendGridApiKey"];
             _sendGridFromEmail = config["Notifications:FromEmail"];
@@ -71,6 +78,7 @@ namespace Jiggswap.Application.Emails
             _sendGridBaseApiUrl = config["Notifications:BaseApiUrl"];
 
             _useRealEmails = bool.Parse(config["Notifications:UseRealEmails"]);
+            _razorRenderer = razorRenderer;
         }
 
         protected Task<Response> SendHtmlEmail(JiggswapHtmlEmail notification)
@@ -110,12 +118,20 @@ namespace Jiggswap.Application.Emails
             return Task.FromResult(new Response(HttpStatusCode.OK, null, null));
         }
 
-        protected Task<Response> SendTemplateEmail(JiggswapTemplateEmail notification)
+        protected async Task<Response> SendRazorRenderedEmail<TModel>(JiggswapRenderedEmail<TModel> notification)
+            where TModel : JiggswapEmailViewModelBase
         {
             var sendGridClient = new SendGridClient(_sendGridApiKey);
             var from = new EmailAddress(_sendGridFromEmail, _sendGridFromName);
 
-            var msg = MailHelper.CreateSingleTemplateEmail(from, notification.ToEmail, notification.TemplateId, notification.TemplateData);
+            var html = await _razorRenderer.RenderViewToStringAsync(notification.Model.RazorViewPath, notification.Model);
+
+            var msg = MailHelper.CreateSingleEmail(
+                from,
+                notification.ToEmail,
+                notification.Subject,
+                notification.Model.GetPlainContent(),
+                html);
 
             if (notification.ReplyTo != null)
             {
@@ -124,34 +140,12 @@ namespace Jiggswap.Application.Emails
 
             if (_useRealEmails)
             {
-                return sendGridClient.SendEmailAsync(msg);
-            }
-
-            Console.WriteLine("Template email not sent due to config");
-
-            return Task.FromResult(new Response(HttpStatusCode.OK, null, null));
-        }
-
-        protected Task<Response> SendRazorRenderedEmail(JiggswapRenderedEmail notification)
-        {
-            var sendGridClient = new SendGridClient(_sendGridApiKey);
-            var from = new EmailAddress(_sendGridFromEmail, _sendGridFromName);
-
-            var msg = MailHelper.CreateSingleEmail(from, notification.ToEmail, notification.Subject, notification.PlainContent, notification.HtmlContent);
-
-            if (notification.ReplyTo != null)
-            {
-                msg.SetReplyTo(notification.ReplyTo);
-            }
-
-            if (_useRealEmails)
-            {
-                return sendGridClient.SendEmailAsync(msg);
+                return await sendGridClient.SendEmailAsync(msg);
             }
 
             SendTestEmail(msg);
 
-            return Task.FromResult(new Response(HttpStatusCode.OK, null, null));
+            return await Task.FromResult(new Response(HttpStatusCode.OK, null, null));
         }
 
         private void SendTestEmail(SendGridMessage msg)
@@ -169,8 +163,11 @@ namespace Jiggswap.Application.Emails
                 Text = msg.Contents[1].Value
             };
 
-            using var client = new SmtpClient();
-            client.ServerCertificateValidationCallback = (_, __, ___, ____) => true;
+            using var client = new SmtpClient
+            {
+                ServerCertificateValidationCallback = (_, __, ___, ____) => true
+            };
+
             client.Connect("127.0.0.1", 25, false);
             client.Send(testMessage);
             client.Disconnect(true);

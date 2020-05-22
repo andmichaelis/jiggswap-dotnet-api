@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Jiggswap.RazorViewEngine;
+using Microsoft.Extensions.Configuration;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using System;
@@ -15,7 +16,7 @@ namespace Jiggswap.Application.Emails
 
     public class JiggswapFeedbackEmail : JiggswapEmailerBase, IJiggswapFeedbackEmail
     {
-        public JiggswapFeedbackEmail(IConfiguration config) : base(config)
+        public JiggswapFeedbackEmail(IConfiguration config, IJiggswapRazorViewRenderer razorRenderer) : base(config, razorRenderer)
         {
         }
 

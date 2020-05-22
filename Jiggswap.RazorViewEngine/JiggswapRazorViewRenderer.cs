@@ -39,27 +39,17 @@ namespace Jiggswap.RazorViewEngine
             var actionContext = GetActionContext();
             var view = FindView(actionContext, viewName);
 
-            using (var output = new StringWriter())
-            {
-                var viewContext = new ViewContext(
-                    actionContext,
-                    view,
-                    new ViewDataDictionary<TModel>(
-                        metadataProvider: new EmptyModelMetadataProvider(),
-                        modelState: new ModelStateDictionary())
-                    {
-                        Model = model
-                    },
-                    new TempDataDictionary(
-                        actionContext.HttpContext,
-                        _tempDataProvider),
-                    output,
-                    new HtmlHelperOptions());
+            using var output = new StringWriter();
+            var viewContext = new ViewContext(actionContext, view,
+                new ViewDataDictionary<TModel>(metadataProvider: new EmptyModelMetadataProvider(), modelState: new ModelStateDictionary()) { Model = model },
+                new TempDataDictionary(actionContext.HttpContext, _tempDataProvider),
+                output,
+                new HtmlHelperOptions()
+                );
 
-                await view.RenderAsync(viewContext);
+            await view.RenderAsync(viewContext);
 
-                return output.ToString();
-            }
+            return output.ToString();
         }
 
         private IView FindView(ActionContext actionContext, string viewName)
@@ -79,16 +69,14 @@ namespace Jiggswap.RazorViewEngine
             var searchedLocations = getViewResult.SearchedLocations.Concat(findViewResult.SearchedLocations);
             var errorMessage = string.Join(
                 Environment.NewLine,
-                new[] { $"Unable to find view '{viewName}'. The following locations were searched:" }.Concat(searchedLocations)); ;
+                new[] { $"Unable to find view '{viewName}'. The following locations were searched:" }.Concat(searchedLocations));
 
             throw new InvalidOperationException(errorMessage);
         }
 
         private ActionContext GetActionContext()
         {
-            var httpContext = new DefaultHttpContext();
-            httpContext.RequestServices = _serviceProvider;
-            return new ActionContext(httpContext, new RouteData(), new ActionDescriptor());
+            return new ActionContext(new DefaultHttpContext { RequestServices = _serviceProvider }, new RouteData(), new ActionDescriptor());
         }
     }
 }

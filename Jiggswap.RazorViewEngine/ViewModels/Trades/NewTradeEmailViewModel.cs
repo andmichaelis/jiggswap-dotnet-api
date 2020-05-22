@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jiggswap.RazorViewEngine.ViewModels.Trades
 {
-    public class NewTradeEmailViewModel
+    public class NewTradeEmailViewModel : JiggswapEmailViewModelBase
     {
         public NewTradeEmailViewModel(string apiUrl, string webUrl, TradeDetailsDto tradeDetails)
         {
@@ -42,7 +42,9 @@ namespace Jiggswap.RazorViewEngine.ViewModels.Trades
 
         public string ViewUrl { get; set; }
 
-        public string GetPlainContent()
+        public override string RazorViewPath => "/Views/Emails/Trades/NewTradeEmail.cshtml";
+
+        public override string GetPlainContent()
         {
             return $"{InitiatorPuzzle.OwnerUsername} wants to trade with you.";
         }
