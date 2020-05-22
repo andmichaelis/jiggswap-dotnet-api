@@ -1,4 +1,5 @@
-﻿@using Jiggswap.RazorViewEngine.Models.Trades
+﻿@using Jiggswap.RazorViewEngine.ViewModels.Trades
+@using Jiggswap.RazorViewEngine.ViewModels.EmailCommon
 @model NewTradeEmailViewModel
 
 @{
@@ -14,55 +15,42 @@
     </tr>
 </table>
 
-<table border="0" cellpadding="0" cellspacing="0" width="600" id="templateColumns">
-    <tr>
-        <td align="center" valign="top" width="33%" class="templateColumnContainer">
-            <table border="0" cellpadding="10" cellspacing="0" width="100%">
-                <tr>
-                    @(Model.InitiatorPuzzle.OwnerUsername)'s Puzzle
-                </tr>
+<hr />
 
-                <tr>
-                    <td class="leftColumnContent">
-                        <img src="@(Model.InitiatorPuzzle.ImageUrl)" class="columnImage" />
-                    </td>
-                </tr>
-                <tr>
-                    <td valign="top" class="leftColumnContent">
-                        <b>Title</b>: @(Model.InitiatorPuzzle.Title)
-                    </td>
-                </tr>
-            </table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px">
+    <tr>
+        <td align="center" valign="top" width="48%" style="max-width: 288px">
+            @await Html.PartialAsync("TradePuzzleDetails", Model.RequestedPuzzle)
         </td>
-        <td align="center" valign="top" width="33%" class="templateColumnContainer">
-            <table border="0" cellpadding="10" cellspacing="0" width="100%">
-                <tr>
-                    <td class="centerColumnContent">
-                        <img src="http://placekitten.com/g/180/200" class="columnImage" />
-                    </td>
-                </tr>
-                <tr>
-                    <td valign="top" class="centerColumnContent">
-                        <h1>Right Column</h1>
-                        Lorem ipsum dolor sit amet.
-                    </td>
-                </tr>
-            </table>
+
+        <td align="center" valign="middle" width="4%" style="max-width: 24px">
+            <span style="font-size: 2rem; width: 100%">⇄</span>
         </td>
-        <td align="center" valign="top" width="33%" class="templateColumnContainer">
-            <table border="0" cellpadding="10" cellspacing="0" width="100%">
-                <tr>
-                    <td class="rightColumnContent">
-                        <img src="http://placekitten.com/g/180/200" class="columnImage" />
-                    </td>
-                </tr>
-                <tr>
-                    <td valign="top" class="rightColumnContent">
-                        <h1>Right Column</h1>
-                        Lorem ipsum dolor sit amet.
-                    </td>
-                </tr>
-            </table>
+        <td align="center" valign="top" width="48%" style="max-width: 288px">
+            @await Html.PartialAsync("TradePuzzleDetails", Model.InitiatorPuzzle)
+        </td>
+    </tr>
+</table>
+
+<hr />
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <td align="center">
+            You can view your JiggSwap Trades here:
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            @await Html.PartialAsync("EmailButton", new EmailButtonViewModel("View Trades", Model.ViewUrl))
+        </td>
+    </tr>
+</table>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <td align="center">
+            If you have any questions or issues, please get in touch with us by replying to this email.
         </td>
     </tr>
 </table>

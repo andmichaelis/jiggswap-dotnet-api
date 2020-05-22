@@ -29,31 +29,15 @@ namespace Jiggswap.Application.Trades.Queries
         {
             using var conn = _db.GetConnection();
 
-            return await conn.QuerySingleAsync<TradeDetailsDto>(@"
-                select
-                    T.public_id TradeId,
-                    T.id TradeInternalId,
-                    T.updated_at UpdatedAt,
-                    T.Status,
-                    IU.username InitiatorUsername,
-                    RU.username RequestedUsername,
-                    IP.title InitiatorPuzzleTitle,
-                    RP.title RequestedPuzzleTitle,
-                    IP.tags InitiatorPuzzleTags,
-                    RP.tags RequestedPuzzleTags,
-                    IP.image_id InitiatorPuzzleImageId,
-                    RP.image_id RequestedPuzzleImageId
-                from
-                    Trades T
-                    join users IU on IU.id = T.initiator_user_id
-                    join users RU on RU.id = T.requested_user_id
-                    join puzzles IP on IP.id = T.initiator_puzzle_id
-                    join puzzles RP on RP.id = T.requested_puzzle_id
+            return await conn.QuerySingleAsync<TradeDetailsDto>(@$"
+                {GetTradesForUserQueryHandler.SqlQuery}
                 where
-                    T.public_id = @TradeId", new
-            {
-                request.TradeId
-            }).ConfigureAwait(false);
+                    T.public_id = @TradeId",
+                    new
+                    {
+                        TradeStates.Active,
+                        request.TradeId
+                    });
         }
     }
 }

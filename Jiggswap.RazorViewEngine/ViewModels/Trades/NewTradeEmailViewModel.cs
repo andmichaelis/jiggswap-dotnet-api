@@ -3,47 +3,44 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Jiggswap.RazorViewEngine.Models.Trades
+namespace Jiggswap.RazorViewEngine.ViewModels.Trades
 {
-    public class NewTradeEmailPuzzleViewModel
-    {
-        public string OwnerUsername { get; set; }
-
-        public string Title { get; set; }
-
-        public string NumPieces { get; set; }
-
-        public string Brand { get; set; }
-
-        public string ImageUrl { get; set; }
-    }
-
     public class NewTradeEmailViewModel
     {
         public NewTradeEmailViewModel(string apiUrl, string webUrl, TradeDetailsDto tradeDetails)
         {
-            InitiatorPuzzle = new NewTradeEmailPuzzleViewModel
+            InitiatorPuzzle = new TradeEmailPuzzleViewModel
             {
                 OwnerUsername = tradeDetails.InitiatorUsername,
                 Brand = tradeDetails.InitiatorPuzzleBrand,
                 ImageUrl = $"{apiUrl}/image/{tradeDetails.InitiatorPuzzleImageId}",
                 NumPieces = tradeDetails.InitiatorPuzzleNumPieces,
-                Title = tradeDetails.InitiatorPuzzleTitle
+                NumPiecesMissing = tradeDetails.InitiatorPuzzleNumPiecesMissing,
+                Title = tradeDetails.InitiatorPuzzleTitle,
+                ShippingFrom = tradeDetails.InitiatorCity,
+                MaxWidth = 288
             };
 
-            RequestedPuzzle = new NewTradeEmailPuzzleViewModel
+            RequestedPuzzle = new TradeEmailPuzzleViewModel
             {
                 OwnerUsername = tradeDetails.RequestedUsername,
                 Brand = tradeDetails.RequestedPuzzleBrand,
                 ImageUrl = $"{apiUrl}/image/{tradeDetails.RequestedPuzzleImageId}",
                 NumPieces = tradeDetails.RequestedPuzzleNumPieces,
-                Title = tradeDetails.RequestedPuzzleTitle
+                NumPiecesMissing = tradeDetails.RequestedPuzzleNumPiecesMissing,
+                Title = tradeDetails.RequestedPuzzleTitle,
+                ShippingFrom = tradeDetails.RequestedCity,
+                MaxWidth = 288
             };
+
+            ViewUrl = $"{webUrl}/trades";
         }
 
-        public NewTradeEmailPuzzleViewModel InitiatorPuzzle { get; set; }
+        public TradeEmailPuzzleViewModel InitiatorPuzzle { get; set; }
 
-        public NewTradeEmailPuzzleViewModel RequestedPuzzle { get; set; }
+        public TradeEmailPuzzleViewModel RequestedPuzzle { get; set; }
+
+        public string ViewUrl { get; set; }
 
         public string GetPlainContent()
         {

@@ -1,7 +1,7 @@
 ﻿using Jiggswap.Application.Trades.Dtos;
 using Jiggswap.Domain.Trades;
 using Jiggswap.RazorViewEngine;
-using Jiggswap.RazorViewEngine.Models.Trades;
+using Jiggswap.RazorViewEngine.ViewModels.Trades;
 using Microsoft.Extensions.Configuration;
 using SendGrid;
 using SendGrid.Helpers.Mail;

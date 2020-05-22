@@ -28,11 +28,8 @@ namespace Jiggswap.Application.Trades.Queries
             _db = db;
         }
 
-        public async Task<TradesForUserResponse> Handle(GetTradesForUserQuery request, CancellationToken cancellationToken)
-        {
-            using var conn = _db.GetConnection();
-            var trades = await conn.QueryAsync<TradeDetailsDto>(@"
-                select
+        public static string SqlQuery = @"
+            select
                     T.public_id TradeId,
                     T.id TradeInternalId,
                     T.updated_at UpdatedAt,
@@ -70,7 +67,13 @@ namespace Jiggswap.Application.Trades.Queries
                     left outer join user_profiles IUP on IUP.user_id = T.initiator_user_id
                     left outer join user_profiles RUP on RUP.user_id = T.requested_user_id
                     join puzzles IP on IP.id = T.initiator_puzzle_id
-                    join puzzles RP on RP.id = T.requested_puzzle_id
+                    join puzzles RP on RP.id = T.requested_puzzle_id";
+
+        public async Task<TradesForUserResponse> Handle(GetTradesForUserQuery request, CancellationToken cancellationToken)
+        {
+            using var conn = _db.GetConnection();
+            var trades = await conn.QueryAsync<TradeDetailsDto>(@$"
+                {SqlQuery}
                 where
                     (T.initiator_user_id = @UserId or T.requested_user_id = @UserId)
                     and (T.status in (@Proposed, @Active))",
