@@ -22,11 +22,19 @@ namespace Jiggswap.Api.Controllers
         }
 
         [HttpGet("{id}"), ResponseCache(Duration = int.MaxValue)]
-        public async Task<ActionResult> Get([FromRoute] int id)
+        public async Task<FileContentResult> Get([FromRoute] int id)
         {
             var data = await Mediator.Send(new GetImageQuery { ImageId = id }).ConfigureAwait(false);
 
             return new FileContentResult(data, "image/jpeg");
+        }
+
+        [HttpGet("{id}/b64")]
+        public async Task<ActionResult<string>> GetBase64([FromRoute] int id)
+        {
+            var data = await Mediator.Send(new GetImageQuery { ImageId = id });
+
+            return Ok(Convert.ToBase64String(data));
         }
     }
 }
