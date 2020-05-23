@@ -29,22 +29,26 @@ namespace Jiggswap.Application.Contact.Commands
             RuleFor(v => v.Email)
                 .Cascade(CascadeMode.StopOnFirstFailure)
                 .NotEmpty()
-                .Must(email =>
-                {
-                    try
-                    {
-                        var m = new MailAddress(email);
-                        return true;
-                    }
-                    catch (Exception)
-                    {
-                        return false;
-                    }
-                })
+                .Must(BeValidEmail)
                 .WithMessage("'Email' does not appear to be a valid email format.");
 
             RuleFor(v => v.Comment)
                 .NotEmpty();
+        }
+
+        private bool BeValidEmail(string email)
+        {
+            try
+            {
+                var m = new MailAddress(email);
+                return true;
+            }
+#pragma warning disable CA1031 // Do not catch general exception types
+            catch (Exception)
+            {
+                return false;
+            }
+#pragma warning restore CA1031 // Do not catch general exception types
         }
     }
 

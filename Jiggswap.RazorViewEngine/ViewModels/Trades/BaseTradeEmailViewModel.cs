@@ -7,7 +7,7 @@ namespace Jiggswap.RazorViewEngine.ViewModels.Trades
 {
     public abstract class BaseTradeEmailViewModel : JiggswapEmailViewModelBase
     {
-        public BaseTradeEmailViewModel(string apiUrl, string webUrl, TradeDetailsDto tradeDetails)
+        protected BaseTradeEmailViewModel(string apiUrl, string webUrl, TradeDetailsDto tradeDetails)
         {
             InitiatorPuzzle = new TradeEmailPuzzleViewModel
             {
