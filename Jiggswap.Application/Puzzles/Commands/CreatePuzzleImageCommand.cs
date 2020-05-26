@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using ImageMagick;
 using Jiggswap.Application.Common;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -37,6 +38,15 @@ namespace Jiggswap.Application.Puzzles.Commands
             return stream.ToArray();
         }
 
+        private byte[] ShrinkImage(byte[] imageData)
+        {
+            using var image = new MagickImage(imageData);
+
+            image.Resize(400, 300);
+
+            return image.ToByteArray();
+        }
+
         public async Task<bool> Handle(CreatePuzzleImageCommand request, CancellationToken cancellationToken)
         {
             if (request.ImageBlob == null)
@@ -44,7 +54,9 @@ namespace Jiggswap.Application.Puzzles.Commands
                 return true;
             }
 
-            var imageData = await GetImageDataFromBlob(request.ImageBlob).ConfigureAwait(false);
+            var imageData = await GetImageDataFromBlob(request.ImageBlob);
+
+            imageData = ShrinkImage(imageData);
 
             using var conn = _db.GetConnection();
 
@@ -52,20 +64,20 @@ namespace Jiggswap.Application.Puzzles.Commands
                 "select image_id from puzzles where public_id = @PuzzleId", new
                 {
                     request.PuzzleId
-                }).ConfigureAwait(false);
+                });
 
             var newImageId = await conn.QuerySingleAsync<int>("insert into images (image_data) values (@ImageData) returning id",
                 new
                 {
                     imageData
-                }).ConfigureAwait(false);
+                });
 
             await conn.ExecuteAsync("update puzzles set image_id = @ImageId where public_id = @PuzzleId",
                 new
                 {
                     ImageId = newImageId,
                     request.PuzzleId
-                }).ConfigureAwait(false);
+                });
 
             if (oldImageId != null)
             {
@@ -73,7 +85,7 @@ namespace Jiggswap.Application.Puzzles.Commands
                     new
                     {
                         OldImageId = oldImageId
-                    }).ConfigureAwait(false);
+                    });
             }
 
             return true;
