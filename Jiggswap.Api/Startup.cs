@@ -51,12 +51,15 @@ namespace JiggswapApi
             {
                 opts.KnownProxies.Add(System.Net.IPAddress.Parse("127.0.0.1"));
                 opts.ForwardLimit = 2;
+                opts.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseForwardedHeaders();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

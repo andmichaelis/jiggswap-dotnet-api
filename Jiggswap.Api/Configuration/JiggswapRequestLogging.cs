@@ -33,6 +33,10 @@ namespace Jiggswap.Api.Configuration
         {
             using (var conn = db.GetConnection())
             {
+                var remoteIp = context.Request.Headers.ContainsKey("X-Forwarded-For") ?
+                                context.Request.Headers["X-Forwarded-For"].ToString()
+                                : context.Connection.RemoteIpAddress.ToString();
+
                 await conn.ExecuteAsync(@"
                     insert into site_activity
                     (user_id, path, ip_address)
@@ -42,7 +46,7 @@ namespace Jiggswap.Api.Configuration
                     {
                         UserId = currentUser.InternalUserId,
                         Path = context.Request.Path.Value?.ToString() ?? string.Empty,
-                        IpAddress = context.Connection.RemoteIpAddress.ToString()
+                        IpAddress = remoteIp
                     });
             }
 
