@@ -39,14 +39,15 @@ namespace Jiggswap.Api.Configuration
 
                 await conn.ExecuteAsync(@"
                     insert into site_activity
-                    (user_id, path, ip_address)
+                    (user_id, path, ip_address, http_method)
                     values
-                    (@UserId, @Path, @IpAddress)",
+                    (@InternalUserId, @Path, @remoteIp, @Method)",
                     new
                     {
-                        UserId = currentUser.InternalUserId,
+                        currentUser.InternalUserId,
                         Path = context.Request.Path.Value?.ToString() ?? string.Empty,
-                        IpAddress = remoteIp
+                        remoteIp,
+                        context.Request.Method
                     });
             }
 
