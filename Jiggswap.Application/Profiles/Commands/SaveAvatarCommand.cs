@@ -1,27 +1,27 @@
 ﻿using Dapper;
 using ImageMagick;
 using Jiggswap.Application.Common;
+using Jiggswap.Application.Common.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Jiggswap.Application.Puzzles.Commands
+namespace Jiggswap.Application.Profiles.Commands
 {
-    public class CreatePuzzleImageCommand : IRequest<bool>
+    public class SaveAvatarCommand : IRequest<int>
     {
         public IFormFile ImageBlob { get; set; }
 
-        public Guid PuzzleId { get; set; }
+        public int ProfileId { get; set; }
     }
 
-    public class CreatePuzzleImageCommandHandler : IRequestHandler<CreatePuzzleImageCommand, bool>
+    public class SaveAvatarCommandHandler : IRequestHandler<SaveAvatarCommand, int>
     {
         private readonly IJiggswapDb _db;
 
-        public CreatePuzzleImageCommandHandler(IJiggswapDb db)
+        public SaveAvatarCommandHandler(IJiggswapDb db)
         {
             _db = db;
         }
@@ -39,18 +39,13 @@ namespace Jiggswap.Application.Puzzles.Commands
         {
             using var image = new MagickImage(imageData);
 
-            image.Resize(600, 450);
+            image.Resize(256, 256);
 
             return image.ToByteArray();
         }
 
-        public async Task<bool> Handle(CreatePuzzleImageCommand request, CancellationToken cancellationToken)
+        public async Task<int> Handle(SaveAvatarCommand request, CancellationToken cancellationToken)
         {
-            if (request.ImageBlob == null)
-            {
-                return true;
-            }
-
             var imageData = await GetImageDataFromBlob(request.ImageBlob);
 
             imageData = ShrinkImage(imageData);
@@ -64,16 +59,16 @@ namespace Jiggswap.Application.Puzzles.Commands
                 });
 
             var oldImageId = await conn.QuerySingleOrDefaultAsync<int?>(
-                "select image_id from puzzles where public_id = @PuzzleId", new
+                "select image_id from user_profiles where id = @ProfileId", new
                 {
-                    request.PuzzleId
+                    request.ProfileId
                 });
 
-            await conn.ExecuteAsync("update puzzles set image_id = @ImageId where public_id = @PuzzleId",
+            await conn.ExecuteAsync("update user_profiles set image_id = @ImageId where id = @ProfileId",
                 new
                 {
                     ImageId = newImageId,
-                    request.PuzzleId
+                    request.ProfileId
                 });
 
             if (oldImageId != null)
@@ -85,7 +80,7 @@ namespace Jiggswap.Application.Puzzles.Commands
                     });
             }
 
-            return true;
+            return newImageId;
         }
     }
 }

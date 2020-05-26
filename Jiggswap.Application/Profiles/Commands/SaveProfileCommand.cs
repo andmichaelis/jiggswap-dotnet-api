@@ -6,10 +6,14 @@ using Jiggswap.Application.Common;
 using Jiggswap.Application.Common.Interfaces;
 using Jiggswap.Application.Profiles.Dtos;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace Jiggswap.Application.Profiles.Commands
 {
-    public class SaveProfileCommand : PrivateProfileDto, IRequest<bool> { }
+    public class SaveProfileCommand : PrivateProfileDto, IRequest<int>
+    {
+        public IFormFile ImageBlob { get; set; }
+    }
 
     public class SaveProfileCommandValidator : AbstractValidator<SaveProfileCommand>
     {
@@ -33,7 +37,7 @@ namespace Jiggswap.Application.Profiles.Commands
         }
     }
 
-    public class SaveProfileCommandHandler : IRequestHandler<SaveProfileCommand, bool>
+    public class SaveProfileCommandHandler : IRequestHandler<SaveProfileCommand, int>
     {
         private readonly IJiggswapDb _db;
         private readonly int _currentUserId;
@@ -44,11 +48,13 @@ namespace Jiggswap.Application.Profiles.Commands
             _currentUserId = currentUserService.InternalUserId;
         }
 
-        public async Task<bool> Handle(SaveProfileCommand command, CancellationToken cancellationToken)
+        public async Task<int> Handle(SaveProfileCommand command, CancellationToken cancellationToken)
         {
             var profileId = await GetOrCreateProfile(_currentUserId).ConfigureAwait(false);
 
-            return await UpdateProfile(profileId, command).ConfigureAwait(false);
+            await UpdateProfile(profileId, command).ConfigureAwait(false);
+
+            return profileId;
         }
 
         private async Task<bool> UpdateProfile(int profileId, SaveProfileCommand command)

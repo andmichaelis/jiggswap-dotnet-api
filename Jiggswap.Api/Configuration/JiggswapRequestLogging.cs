@@ -31,24 +31,31 @@ namespace Jiggswap.Api.Configuration
 
         public async Task Invoke(HttpContext context, IJiggswapDb db, ICurrentUserService currentUser)
         {
-            using (var conn = db.GetConnection())
-            {
-                var remoteIp = context.Request.Headers.ContainsKey("X-Forwarded-For") ?
-                                context.Request.Headers["X-Forwarded-For"].ToString()
-                                : context.Connection.RemoteIpAddress.ToString();
+            var path = context.Request.Path.Value?.ToString();
 
-                await conn.ExecuteAsync(@"
+            var shouldLog = !path.Contains("image");
+
+            if (shouldLog)
+            {
+                using (var conn = db.GetConnection())
+                {
+                    var remoteIp = context.Request.Headers.ContainsKey("X-Forwarded-For") ?
+                                    context.Request.Headers["X-Forwarded-For"].ToString()
+                                    : context.Connection.RemoteIpAddress.ToString();
+
+                    await conn.ExecuteAsync(@"
                     insert into site_activity
                     (user_id, path, ip_address, http_method)
                     values
                     (@InternalUserId, @Path, @remoteIp, @Method)",
-                    new
-                    {
-                        currentUser.InternalUserId,
-                        Path = context.Request.Path.Value?.ToString() ?? string.Empty,
-                        remoteIp,
-                        context.Request.Method
-                    });
+                        new
+                        {
+                            currentUser.InternalUserId,
+                            Path = context.Request.Path.Value?.ToString() ?? string.Empty,
+                            remoteIp,
+                            context.Request.Method
+                        });
+                }
             }
 
             await _next(context);

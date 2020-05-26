@@ -18,6 +18,8 @@ namespace Jiggswap.Application.Profiles.Queries
         public string DisplayCity { get; set; }
 
         public bool IsCurrentUser { get; set; }
+
+        public int ImageId { get; set; }
     }
 
     public class GetPublicProfileQuery : IRequest<PublicProfileDto>
@@ -52,7 +54,8 @@ namespace Jiggswap.Application.Profiles.Queries
                     UP.StreetAddress,
                     UP.City,
                     UP.State,
-                    UP.Zip
+                    UP.Zip,
+                    UP.image_id ImageId
                 from
                     user_profiles UP
                     join users U
@@ -69,7 +72,8 @@ namespace Jiggswap.Application.Profiles.Queries
                 Username = request.Username,
                 IsCurrentUser = request.Username == _currentUserService.Username,
                 DisplayName = GetDisplayName(data),
-                DisplayCity = GetDisplayCity(data)
+                DisplayCity = GetDisplayCity(data),
+                ImageId = data.ImageId
             };
         }
 

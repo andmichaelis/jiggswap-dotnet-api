@@ -17,5 +17,7 @@ namespace Jiggswap.Application.Profiles.Dtos
         public string State { get; set; }
 
         public string Zip { get; set; }
+
+        public int ImageId { get; set; }
     }
 }

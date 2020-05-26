@@ -36,11 +36,17 @@ namespace Jiggswap.Api.Controllers
 
         [HttpPut()]
         [Authorize]
-        public async Task<ActionResult<bool>> SaveProfile([FromBody] SaveProfileCommand command)
+        public async Task<ActionResult> SaveProfile([FromForm] SaveProfileCommand command)
         {
-            var result = await Mediator.Send(command).ConfigureAwait(false);
+            var profileId = await Mediator.Send(command).ConfigureAwait(false);
 
-            return Ok(result);
+            _ = await Mediator.Send(new SaveAvatarCommand
+            {
+                ProfileId = profileId,
+                ImageBlob = command.ImageBlob
+            }).ConfigureAwait(false);
+
+            return Ok();
         }
     }
 }

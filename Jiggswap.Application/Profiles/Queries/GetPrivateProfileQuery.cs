@@ -31,7 +31,8 @@ namespace Jiggswap.Application.Profiles.Queries
                 StreetAddress,
                 City,
                 State,
-                Zip
+                Zip,
+                image_id ImageId
             from
                 user_profiles UP
             where UP.user_id = @UserId";
