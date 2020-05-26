@@ -42,7 +42,7 @@ namespace Jiggswap.Application.Puzzles.Commands
         {
             using var image = new MagickImage(imageData);
 
-            image.Resize(800, 600);
+            image.Resize(600, 450);
 
             return image.ToByteArray();
         }
