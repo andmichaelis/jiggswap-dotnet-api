@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Org.BouncyCastle.Utilities.Net;
+using System.Net;
 
 namespace JiggswapApi
 {
@@ -44,6 +46,12 @@ namespace JiggswapApi
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<ICurrentUserService>());
 
             services.AddRazorPages();
+
+            services.Configure<ForwardedHeadersOptions>(opts =>
+            {
+                opts.KnownProxies.Add(System.Net.IPAddress.Parse("127.0.0.1"));
+                opts.ForwardLimit = 2;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,10 +63,6 @@ namespace JiggswapApi
             }
 
             app.UseCors(b => b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            });
 
             app.UseRouting();
 
