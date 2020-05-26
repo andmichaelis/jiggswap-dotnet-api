@@ -1,0 +1,10 @@
+﻿@model Jiggswap.RazorViewEngine.ViewModels.Admin.AdminNotificationEmailViewModel
+
+@{
+    ViewData["EmailTitle"] = "Admin Notification";
+    ViewData["PreheaderText"] = $"{Model.Message}";
+}
+
+<div>
+    @Model.Message
+</div>

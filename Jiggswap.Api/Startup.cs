@@ -55,16 +55,17 @@ namespace JiggswapApi
             }
 
             app.UseCors(b => b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-
-            app.UseRouting();
-
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
 
+            app.UseRouting();
+
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseJiggswapRequestLogging();
 
             app.UseEndpoints(endpoints =>
             {

@@ -57,7 +57,7 @@ namespace JiggswapMigrations
 
             // Execute the migrations
 
-            // runner.MigrateDown(202002121235);
+            // runner.MigrateDown(202005260025);
 
             runner.MigrateUp();
         }

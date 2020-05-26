@@ -58,6 +58,8 @@ namespace JiggswapApi.Controllers
 
             var token = _tokenBuilder.CreateToken(result);
 
+            _ = _emailer.SendAdminEmail("New User Signed Up", $"User: {request.Username} <{request.Email}>!");
+
             return Ok(new AuthorizedUserResponseWithToken
             {
                 Username = result.Username,

@@ -14,6 +14,7 @@ using Jiggswap.Domain.Trades;
 using Jiggswap.RazorViewEngine.ViewModels.Trades;
 using Jiggswap.RazorViewEngine.ViewModels.Feedback;
 using Jiggswap.RazorViewEngine.ViewModels.Passwords;
+using Jiggswap.RazorViewEngine.ViewModels.Admin;
 
 namespace Jiggswap.Application.Emails
 {
@@ -42,6 +43,8 @@ namespace Jiggswap.Application.Emails
         Task<Response> SendContactEmail(string name, string email, string comment);
 
         Task<Response> SendForgotPasswordEmail(string email, string token);
+
+        Task<Response> SendAdminEmail(string title, string content);
     }
 
     public class JiggswapEmailer : IJiggswapEmailer
@@ -177,6 +180,17 @@ namespace Jiggswap.Application.Emails
             {
                 Subject = $"Jiggswap - Password Reset Instructions",
                 ToEmail = new EmailAddress(email),
+            });
+        }
+
+        public async Task<Response> SendAdminEmail(string title, string message)
+        {
+            var viewModel = new AdminNotificationEmailViewModel { Message = message };
+
+            return await SendRazorRenderedEmail(new JiggswapRenderedEmail<AdminNotificationEmailViewModel>(viewModel)
+            {
+                Subject = $"Jiggswap - {title}",
+                ToEmail = new EmailAddress(_sendGridFromEmail)
             });
         }
     }
