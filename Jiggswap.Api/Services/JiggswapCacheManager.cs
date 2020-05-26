@@ -37,7 +37,7 @@ namespace Jiggswap.Api.Services
             {
                 using (var conn = _db.GetConnection())
                 {
-                    userId = conn.QuerySingle<int>("select id from users where username = @Username", new { Username = username });
+                    userId = conn.QuerySingleOrDefault<int>("select id from users where username = @Username", new { Username = username });
                 }
 
                 _memoryCache.Set<int>(key, userId, new MemoryCacheEntryOptions

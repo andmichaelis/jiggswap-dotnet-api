@@ -10,8 +10,8 @@ namespace Jiggswap.Migrations.Migrations
     {
         public override void Up()
         {
-            Create.Column("http_method")
-                .OnTable("site_activity")
+            Alter.Table("site_activity")
+                .AddColumn("http_method")
                 .AsString(8)
                 .Nullable();
         }
