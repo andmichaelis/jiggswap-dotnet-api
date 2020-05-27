@@ -40,11 +40,15 @@ namespace Jiggswap.Api.Controllers
         {
             var profileId = await Mediator.Send(command).ConfigureAwait(false);
 
-            _ = await Mediator.Send(new SaveAvatarCommand
+            if (command.ImageBlob != null)
             {
-                ProfileId = profileId,
-                ImageBlob = command.ImageBlob
-            }).ConfigureAwait(false);
+                _ = await Mediator.Send(new SaveAvatarCommand
+                {
+                    ProfileId = profileId,
+                    ImageBlob = command.ImageBlob
+                }).ConfigureAwait(false);
+            }
+
 
             return Ok();
         }
