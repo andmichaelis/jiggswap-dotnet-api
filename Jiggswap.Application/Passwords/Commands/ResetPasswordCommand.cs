@@ -16,15 +16,13 @@ using StackExchange.Redis;
 
 namespace Jiggswap.Application.Passwords.Commands
 {
-    public class ResetPasswordCommand : IPasswordWithConfirmation, IRequest<AuthorizedUserResponse>
+    public class ResetPasswordCommand : IHasPassword, IRequest<AuthorizedUserResponse>
     {
         public string Token { get; set; }
 
         public string Email { get; set; }
 
         public string Password { get; set; }
-
-        public string PasswordConfirmation { get; set; }
     }
 
     public class ResetPasswordCommandValidator : AbstractValidator<ResetPasswordCommand>
@@ -37,7 +35,8 @@ namespace Jiggswap.Application.Passwords.Commands
 
             RuleFor(v => v)
                 .MustAsync(BeValidTokenForEmail)
-                .WithMessage("Provided token is not valid.");
+                .WithName("Email")
+                .WithMessage("This reset link is not valid for this email.");
 
             Include(new PasswordValidator());
         }

@@ -12,15 +12,13 @@ using System.Threading.Tasks;
 
 namespace Jiggswap.Application.Users.Commands
 {
-    public class UserSignupCommand : IPasswordWithConfirmation, IRequest<AuthorizedUserResponse>
+    public class UserSignupCommand : IHasPassword, IRequest<AuthorizedUserResponse>
     {
         public string Username { get; set; }
 
         public string Email { get; set; }
 
         public string Password { get; set; }
-
-        public string PasswordConfirmation { get; set; }
     }
 
     public class UserSignupCommandHandler : IRequestHandler<UserSignupCommand, AuthorizedUserResponse>
