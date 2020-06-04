@@ -12,6 +12,7 @@ using MediatR;
 using Jiggswap.Application.Emails;
 using Org.BouncyCastle.Asn1.IsisMtt.X509;
 using Jiggswap.Application.OAuth.Queries;
+using Jiggswap.Application.OAuth.Commands;
 
 namespace JiggswapApi.Controllers
 {
@@ -54,20 +55,46 @@ namespace JiggswapApi.Controllers
 
         [HttpPost("authorize/google")]
         [AllowAnonymous]
-        public async Task<ActionResult> AuthorizeGoogle(AuthorizeGoogleUserQuery request)
+        public async Task<ActionResult<AuthorizedUserResponseWithToken>> AuthorizeGoogle(AuthorizeGoogleUserQuery request)
         {
-            var isValidToken = await Mediator.Send(request);
+            var oauthData = await Mediator.Send(request);
 
-            return Ok(isValidToken);
+            if (!oauthData.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var user = await Mediator.Send(new OAuthUserSigninCommand { OAuthData = oauthData });
+
+            var token = _tokenBuilder.CreateToken(user);
+
+            return Ok(new AuthorizedUserResponseWithToken
+            {
+                Token = token,
+                Username = user.Username
+            });
         }
 
         [HttpPost("authorize/facebook")]
         [AllowAnonymous]
-        public async Task<ActionResult> AuthorizeFacebook(AuthorizeFacebookUserQuery request)
+        public async Task<ActionResult<AuthorizedUserResponseWithToken>> AuthorizeFacebook(AuthorizeFacebookUserQuery request)
         {
-            var isValidToken = await Mediator.Send(request);
+            var oauthData = await Mediator.Send(request);
 
-            return Ok(isValidToken);
+            if (!oauthData.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var user = await Mediator.Send(new OAuthUserSigninCommand { OAuthData = oauthData });
+
+            var token = _tokenBuilder.CreateToken(user);
+
+            return Ok(new AuthorizedUserResponseWithToken
+            {
+                Token = token,
+                Username = user.Username
+            });
         }
 
         [HttpPost("signup")]

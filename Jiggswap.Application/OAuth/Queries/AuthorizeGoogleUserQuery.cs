@@ -7,42 +7,25 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Configuration;
 using static Google.Apis.Auth.GoogleJsonWebSignature;
+using Jiggswap.Application.OAuth.Dtos;
 
 namespace Jiggswap.Application.OAuth.Queries
 {
-    public class AuthorizeGoogleUserQuery : IRequest<AuthorizeGoogleUserQueryResponse>
+    public class AuthorizeGoogleUserQuery : IRequest<OAuthUserData>
     {
         public string GoogleToken { get; set; }
     }
 
-    public class AuthorizeGoogleUserQueryResponse
-    {
-        public string FirstName { get; set; }
-
-        public string LastName { get; set; }
-
-        public string Email { get; set; }
-
-        public string AvatarUrl { get; set; }
-
-        public string GoogleUserId { get; set; }
-
-        public bool IsValid { get; set; }
-    }
-
-    public class AuthorizeGoogleUserQueryHandler : IRequestHandler<AuthorizeGoogleUserQuery, AuthorizeGoogleUserQueryResponse>
+    public class AuthorizeGoogleUserQueryHandler : IRequestHandler<AuthorizeGoogleUserQuery, OAuthUserData>
     {
         private readonly string _clientId;
-
-        private readonly string _clientSecret;
 
         public AuthorizeGoogleUserQueryHandler(IConfiguration config)
         {
             _clientId = config["OAuth:Google:CLIENT_ID"];
-            _clientSecret = config["OAuth:Google:CLIENT_SECRET"];
         }
 
-        public async Task<AuthorizeGoogleUserQueryResponse> Handle(AuthorizeGoogleUserQuery request, CancellationToken cancellationToken)
+        public async Task<OAuthUserData> Handle(AuthorizeGoogleUserQuery request, CancellationToken cancellationToken)
         {
             await Task.Run(() => true);
 
@@ -57,16 +40,17 @@ namespace Jiggswap.Application.OAuth.Queries
             }
             catch
             {
-                return new AuthorizeGoogleUserQueryResponse { IsValid = false };
+                return new OAuthUserData { IsValid = false };
             }
 
-            return new AuthorizeGoogleUserQueryResponse
+            return new OAuthUserData
             {
                 Email = validatedUser.Email,
                 AvatarUrl = validatedUser.Picture,
                 FirstName = validatedUser.GivenName,
                 LastName = validatedUser.FamilyName,
-                GoogleUserId = validatedUser.Subject,
+                ServiceUserId = validatedUser.Subject,
+                Service = OAuthService.Google,
                 IsValid = true
             };
         }

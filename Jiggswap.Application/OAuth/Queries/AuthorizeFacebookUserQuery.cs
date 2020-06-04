@@ -1,22 +1,19 @@
 ﻿using Jiggswap.Application.OAuth.Dtos;
 using MediatR;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Diagnostics;
 using System.Net.Http;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Jiggswap.Application.OAuth.Queries
 {
-    public class AuthorizeFacebookUserQuery : IRequest<AuthorizeFacebookUserQueryResponse>
+    public class AuthorizeFacebookUserQuery : IRequest<OAuthUserData>
     {
         public string FacebookToken { get; set; }
     }
 
-    public class AuthorizeFacebookUserQueryHandler : IRequestHandler<AuthorizeFacebookUserQuery, AuthorizeFacebookUserQueryResponse>
+    public class AuthorizeFacebookUserQueryHandler : IRequestHandler<AuthorizeFacebookUserQuery, OAuthUserData>
     {
         private readonly string _appId;
 
@@ -58,9 +55,7 @@ namespace Jiggswap.Application.OAuth.Queries
 
             var response = await _httpClient.GetStringAsync(infoUrl);
 
-            var deserialized = JsonSerializer.Deserialize<FacebookUserInfoResponse>(response);
-
-            return deserialized;
+            return JsonSerializer.Deserialize<FacebookUserInfoResponse>(response);
         }
 
         private async Task<bool> ValidateJiggswapFacebookToken(string userToken)
@@ -72,7 +67,7 @@ namespace Jiggswap.Application.OAuth.Queries
             return debugToken.IsValid;
         }
 
-        public async Task<AuthorizeFacebookUserQueryResponse> Handle(AuthorizeFacebookUserQuery request, CancellationToken cancellationToken)
+        public async Task<OAuthUserData> Handle(AuthorizeFacebookUserQuery request, CancellationToken cancellationToken)
         {
             await Task.Delay(1);
 
@@ -80,17 +75,18 @@ namespace Jiggswap.Application.OAuth.Queries
 
             if (!isValidJiggswapToken)
             {
-                return new AuthorizeFacebookUserQueryResponse { IsValid = false };
+                return new OAuthUserData { IsValid = false };
             }
 
             var userData = await GetFacebookUserData(request.FacebookToken);
 
-            return new AuthorizeFacebookUserQueryResponse
+            return new OAuthUserData
             {
                 IsValid = true,
                 AvatarUrl = userData.Picture.Data.IsSilhouette ? string.Empty : userData.Picture.Data.Url,
                 Email = userData.Email,
-                FacebookUserId = userData.FacebookUserId,
+                ServiceUserId = userData.FacebookUserId,
+                Service = OAuthService.Facebook,
                 FirstName = userData.FirstName,
                 LastName = userData.LastName
             };

@@ -105,13 +105,13 @@ namespace Jiggswap.Application.Emails
         {
             var testMessage = new MimeMessage();
 
-            testMessage.From.Add(new MailboxAddress(msg.From.Email));
+            testMessage.From.Add(MailboxAddress.Parse(msg.From.Email));
 
-            testMessage.To.Add(new MailboxAddress("test@jiggswap.com"));
+            testMessage.To.Add(MailboxAddress.Parse("test@jiggswap.com"));
 
             if (!string.IsNullOrEmpty(msg.ReplyTo?.Email))
             {
-                testMessage.ReplyTo.Add(new MailboxAddress(msg.ReplyTo.Email));
+                testMessage.ReplyTo.Add(MailboxAddress.Parse(msg.ReplyTo.Email));
             }
 
             testMessage.Subject = msg.Personalizations[0].Subject;

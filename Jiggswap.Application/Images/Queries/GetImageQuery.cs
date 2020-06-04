@@ -26,7 +26,7 @@ namespace Jiggswap.Application.Images.Queries
         {
             using var conn = _db.GetConnection();
 
-            return await conn.QuerySingleAsync<byte[]>("select image_data from images where id = @ImageId",
+            return await conn.QuerySingleOrDefaultAsync<byte[]>("select image_data from images where id = @ImageId",
             new
             {
                 request.ImageId

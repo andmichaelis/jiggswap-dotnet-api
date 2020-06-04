@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Jiggswap.Application.OAuth.Dtos
 {
-    public class AuthorizeFacebookUserQueryResponse
+    public class OAuthUserData
     {
         public string FirstName { get; set; }
 
@@ -14,8 +14,16 @@ namespace Jiggswap.Application.OAuth.Dtos
 
         public string AvatarUrl { get; set; }
 
-        public string FacebookUserId { get; set; }
+        public string ServiceUserId { get; set; }
+
+        public OAuthService Service { get; set; }
 
         public bool IsValid { get; set; }
+    }
+
+    public enum OAuthService
+    {
+        Google,
+        Facebook
     }
 }
