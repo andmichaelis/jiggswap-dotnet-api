@@ -10,6 +10,8 @@ using Jiggswap.Application.Passwords.Commands;
 using Jiggswap.Application.Users.Dtos;
 using MediatR;
 using Jiggswap.Application.Emails;
+using Org.BouncyCastle.Asn1.IsisMtt.X509;
+using Jiggswap.Application.OAuth.Queries;
 
 namespace JiggswapApi.Controllers
 {
@@ -26,7 +28,7 @@ namespace JiggswapApi.Controllers
             _emailer = emailer;
         }
 
-        [HttpPost("authorize")]
+        [HttpPost("authorize/jiggswap")]
         [AllowAnonymous]
         public async Task<ActionResult<AuthorizedUserResponseWithToken>> Authorize(UserSigninQuery request)
         {
@@ -48,6 +50,24 @@ namespace JiggswapApi.Controllers
                 Username = username,
                 Token = token
             });
+        }
+
+        [HttpPost("authorize/google")]
+        [AllowAnonymous]
+        public async Task<ActionResult> AuthorizeGoogle(AuthorizeGoogleUserQuery request)
+        {
+            var isValidToken = await Mediator.Send(request);
+
+            return Ok(isValidToken);
+        }
+
+        [HttpPost("authorize/facebook")]
+        [AllowAnonymous]
+        public async Task<ActionResult> AuthorizeFacebook(AuthorizeFacebookUserQuery request)
+        {
+            var isValidToken = await Mediator.Send(request);
+
+            return Ok(isValidToken);
         }
 
         [HttpPost("signup")]
