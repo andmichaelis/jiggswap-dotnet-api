@@ -93,8 +93,10 @@ namespace Jiggswap.DatabaseSeeder
         {
             _dbConnection.Execute("delete from trades;");
             _dbConnection.Execute("delete from puzzles;");
+            _dbConnection.Execute("delete from user_oauth_data;");
             _dbConnection.Execute("delete from user_profiles;");
             _dbConnection.Execute("delete from users;");
+            _dbConnection.Execute("delete from images;");
         }
     }
 }

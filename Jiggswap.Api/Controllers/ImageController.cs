@@ -34,6 +34,11 @@ namespace Jiggswap.Api.Controllers
         {
             var data = await Mediator.Send(new GetImageQuery { ImageId = id });
 
+            if (data == null)
+            {
+                return NotFound();
+            }
+
             return Ok(Convert.ToBase64String(data));
         }
     }

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -48,15 +49,35 @@ namespace Jiggswap.Application.OAuth.Commands
                 });
         }
 
-        private async Task<int> CreateJiggswapUser(OAuthUserData userData)
+        private async Task<int?> GetJiggswapUserIdByEmail(string email)
+        {
+            using var conn = _db.GetConnection();
+            return await conn.QuerySingleOrDefaultAsync<int?>("select id from users where email = @Email", new { email });
+        }
+
+        private string GenerateUsername(OAuthUserData userData)
+        {
+            var rngProvider = new RNGCryptoServiceProvider();
+            var bytes = new byte[4];
+            rngProvider.GetBytes(bytes);
+            var randInt = BitConverter.ToInt32(bytes, 0);
+
+            return userData.FirstName + userData.LastName[0] + randInt.ToString().PadRight(5, '0').Substring(1, 5);
+        }
+
+        private async Task<int> CreateOrLinkJiggswapUser(OAuthUserData userData)
         {
             using var conn = _db.GetConnection();
 
-            var username = userData.FirstName + userData.LastName[0];
+            var username = GenerateUsername(userData);
 
             var email = userData.Email;
 
-            var userId = await conn.QuerySingleAsync<int>(@"
+            var userId = await GetJiggswapUserIdByEmail(userData.Email);
+
+            if (!userId.HasValue)
+            {
+                userId = await conn.QuerySingleAsync<int>(@"
                 insert into users
                 ( username, email, password_hash )
                 values
@@ -68,6 +89,7 @@ namespace Jiggswap.Application.OAuth.Commands
                     userData.Email,
                     PasswordHash = ""
                 });
+            }
 
             await conn.ExecuteAsync(@"
                 insert into user_profiles
@@ -76,7 +98,7 @@ namespace Jiggswap.Application.OAuth.Commands
                 ( @UserId, @FirstName, @LastName )",
                 new
                 {
-                    userId,
+                    UserId = userId.Value,
                     userData.FirstName,
                     userData.LastName
                 });
@@ -88,12 +110,12 @@ namespace Jiggswap.Application.OAuth.Commands
                 ( @UserId, @Service, @ServiceUserId )",
                 new
                 {
-                    userId,
+                    UserId = userId.Value,
                     Service = userData.Service.ToString(),
                     userData.ServiceUserId
                 });
 
-            return userId;
+            return userId.Value;
         }
 
         private async Task<string> GetUsername(int userId)
@@ -107,11 +129,11 @@ namespace Jiggswap.Application.OAuth.Commands
         {
             var jiggswapUserId = await GetJiggswapUserId(request.OAuthData.Service, request.OAuthData.ServiceUserId);
 
-            _logger.LogInformation("Existing User Id: {0}", jiggswapUserId);
+            _logger.LogInformation("OAuth User account found: {0}", jiggswapUserId);
 
             if (!jiggswapUserId.HasValue)
             {
-                jiggswapUserId = await CreateJiggswapUser(request.OAuthData);
+                jiggswapUserId = await CreateOrLinkJiggswapUser(request.OAuthData);
 
                 _logger.LogInformation("Created user. New Id: {0}", jiggswapUserId);
             }

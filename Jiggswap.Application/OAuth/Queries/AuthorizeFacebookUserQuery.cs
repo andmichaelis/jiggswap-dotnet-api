@@ -11,6 +11,10 @@ namespace Jiggswap.Application.OAuth.Queries
     public class AuthorizeFacebookUserQuery : IRequest<OAuthUserData>
     {
         public string FacebookToken { get; set; }
+
+        public string Email { get; set; }
+
+        public string Password { get; set; }
     }
 
     public class AuthorizeFacebookUserQueryHandler : IRequestHandler<AuthorizeFacebookUserQuery, OAuthUserData>

@@ -13,6 +13,7 @@ using Jiggswap.Application.Emails;
 using Org.BouncyCastle.Asn1.IsisMtt.X509;
 using Jiggswap.Application.OAuth.Queries;
 using Jiggswap.Application.OAuth.Commands;
+using Jiggswap.Application.OAuth.Dtos;
 
 namespace JiggswapApi.Controllers
 {
@@ -64,15 +65,7 @@ namespace JiggswapApi.Controllers
                 return BadRequest();
             }
 
-            var user = await Mediator.Send(new OAuthUserSigninCommand { OAuthData = oauthData });
-
-            var token = _tokenBuilder.CreateToken(user);
-
-            return Ok(new AuthorizedUserResponseWithToken
-            {
-                Token = token,
-                Username = user.Username
-            });
+            return await LoginOAuthRequest(oauthData);
         }
 
         [HttpPost("authorize/facebook")]
@@ -86,13 +79,39 @@ namespace JiggswapApi.Controllers
                 return BadRequest();
             }
 
-            var user = await Mediator.Send(new OAuthUserSigninCommand { OAuthData = oauthData });
+            return await LoginOAuthRequest(oauthData);
+        }
 
-            var token = _tokenBuilder.CreateToken(user);
+        private async Task<ActionResult> LoginOAuthRequest(OAuthUserData oauthData)
+        {
+            // Find linked account
+
+            var linkedAccount = await Mediator.Send(new OAuthFindLinkedAccountQuery(oauthData.Service, oauthData.ServiceUserId));
+
+            // If linked account exists, generate JWT & return
+            if (!string.IsNullOrEmpty(linkedAccount.Username))
+            {
+                return Ok(new AuthorizedUserResponseWithToken
+                {
+                    Username = linkedAccount.Username,
+                    Token = _tokenBuilder.CreateToken(linkedAccount)
+                });
+            }
+
+            // If email not included in auth data, deny (for now) and let them know we are only allowing accounts with verified emails.
+
+            if (string.IsNullOrEmpty(oauthData.Email))
+            {
+                return Ok(new { NeedEmail = true });
+            }
+
+            // Create new Jiggswap account (or link via Email). Generate JWT & Return.
+
+            var user = await Mediator.Send(new OAuthUserSigninCommand { OAuthData = oauthData });
 
             return Ok(new AuthorizedUserResponseWithToken
             {
-                Token = token,
+                Token = _tokenBuilder.CreateToken(user),
                 Username = user.Username
             });
         }
