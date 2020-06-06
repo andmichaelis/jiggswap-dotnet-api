@@ -62,7 +62,12 @@ namespace Jiggswap.Application.OAuth.Commands
             rngProvider.GetBytes(bytes);
             var randInt = BitConverter.ToInt32(bytes, 0);
 
-            return userData.FirstName + userData.LastName[0] + randInt.ToString().PadRight(5, '0').Substring(1, 5);
+            var salt = randInt.ToString().PadRight(8, '0').Substring(1, 5);
+
+            var firstName = userData.FirstName ?? "JiggswapUser";
+            var lastInitial = !string.IsNullOrEmpty(userData.LastName) ? userData.LastName[0].ToString() : "";
+
+            return firstName + lastInitial + salt;
         }
 
         private async Task<int> CreateOrLinkJiggswapUser(OAuthUserData userData)
