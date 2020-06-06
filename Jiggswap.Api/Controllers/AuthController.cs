@@ -14,6 +14,7 @@ using Org.BouncyCastle.Asn1.IsisMtt.X509;
 using Jiggswap.Application.OAuth.Queries;
 using Jiggswap.Application.OAuth.Commands;
 using Jiggswap.Application.OAuth.Dtos;
+using System;
 
 namespace JiggswapApi.Controllers
 {
@@ -32,7 +33,7 @@ namespace JiggswapApi.Controllers
 
         [HttpPost("authorize/jiggswap")]
         [AllowAnonymous]
-        public async Task<ActionResult<AuthorizedUserResponseWithToken>> Authorize(UserSigninQuery request)
+        public async Task<ActionResult<AuthorizedUserResponseWithToken>> AuthorizeJiggswap(UserSigninQuery request)
         {
             var isEmail = request.UsernameOrEmail.Contains('@');
 
@@ -65,7 +66,7 @@ namespace JiggswapApi.Controllers
                 return BadRequest();
             }
 
-            return await LoginOAuthRequest(oauthData);
+            return await AuthorizeOauthRequest(oauthData, request.Username);
         }
 
         [HttpPost("authorize/facebook")]
@@ -79,16 +80,13 @@ namespace JiggswapApi.Controllers
                 return BadRequest();
             }
 
-            return await LoginOAuthRequest(oauthData);
+            return await AuthorizeOauthRequest(oauthData, request.Username);
         }
 
-        private async Task<ActionResult> LoginOAuthRequest(OAuthUserData oauthData)
+        private async Task<ActionResult> AuthorizeOauthRequest(OAuthUserData oauthData, string chosenUsername)
         {
-            // Find linked account
-
             var linkedAccount = await Mediator.Send(new OAuthFindLinkedAccountQuery(oauthData.Service, oauthData.ServiceUserId));
 
-            // If linked account exists, generate JWT & return
             if (!string.IsNullOrEmpty(linkedAccount.Username))
             {
                 return Ok(new AuthorizedUserResponseWithToken
@@ -98,25 +96,15 @@ namespace JiggswapApi.Controllers
                 });
             }
 
-            // If email not included in auth data, deny (for now) and let them know we are only allowing accounts with verified emails.
-
             if (string.IsNullOrEmpty(oauthData.Email))
             {
                 return Ok(new { NeedEmail = true });
             }
 
-            // Create new Jiggswap account (or link via Email). Generate JWT & Return.
-
-            var user = await Mediator.Send(new OAuthUserSigninCommand { OAuthData = oauthData });
-
-            return Ok(new AuthorizedUserResponseWithToken
-            {
-                Token = _tokenBuilder.CreateToken(user),
-                Username = user.Username
-            });
+            return Ok(new { NeedUsername = true });
         }
 
-        [HttpPost("signup")]
+        [HttpPost("signup/jiggswap")]
         [AllowAnonymous]
         public async Task<ActionResult<AuthorizedUserResponseWithToken>> Signup(UserSignupCommand request)
         {
@@ -130,6 +118,49 @@ namespace JiggswapApi.Controllers
             {
                 Username = result.Username,
                 Token = token
+            });
+        }
+
+        [HttpPost("signup/google")]
+        [AllowAnonymous]
+        public async Task<ActionResult<AuthorizedUserResponseWithToken>> SignupGoogle(OAuthSignupQuery request)
+        {
+            // Validated Username
+
+            var oauthData = await Mediator.Send(new AuthorizeGoogleUserQuery { Token = request.Token, Username = request.Username });
+
+            if (!oauthData.IsValid)
+            {
+                return BadRequest();
+            }
+
+            return await SignupOAuthRequest(oauthData, request.Username);
+        }
+
+        [HttpPost("signup/facebook")]
+        [AllowAnonymous]
+        public async Task<ActionResult<AuthorizedUserResponseWithToken>> SignupFacebook(OAuthSignupQuery request)
+        {
+            // Validated Username
+
+            var oauthData = await Mediator.Send(new AuthorizeFacebookUserQuery { Token = request.Token, Username = request.Username });
+
+            if (!oauthData.IsValid)
+            {
+                return BadRequest();
+            }
+
+            return await SignupOAuthRequest(oauthData, request.Username);
+        }
+
+        private async Task<ActionResult<AuthorizedUserResponseWithToken>> SignupOAuthRequest(OAuthUserData oauthData, string username)
+        {
+            var user = await Mediator.Send(new OAuthUserSigninCommand { OAuthData = oauthData, Username = username });
+
+            return Ok(new AuthorizedUserResponseWithToken
+            {
+                Token = _tokenBuilder.CreateToken(user),
+                Username = user.Username
             });
         }
 

@@ -26,7 +26,7 @@ namespace Jiggswap.Application.OAuth.Queries
 
     public class OAuthFindLinkedAccountQueryHandler : IRequestHandler<OAuthFindLinkedAccountQuery, AuthorizedUserResponse>
     {
-        private IJiggswapDb _db;
+        private readonly IJiggswapDb _db;
 
         public OAuthFindLinkedAccountQueryHandler(IJiggswapDb db)
         {

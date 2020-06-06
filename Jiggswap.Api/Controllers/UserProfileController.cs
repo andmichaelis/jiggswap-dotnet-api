@@ -49,7 +49,6 @@ namespace Jiggswap.Api.Controllers
                 }).ConfigureAwait(false);
             }
 
-
             return Ok();
         }
     }

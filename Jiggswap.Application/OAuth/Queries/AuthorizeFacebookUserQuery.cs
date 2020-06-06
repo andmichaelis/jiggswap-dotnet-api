@@ -1,4 +1,7 @@
-﻿using Jiggswap.Application.OAuth.Dtos;
+﻿using Dapper;
+using FluentValidation;
+using Jiggswap.Application.Common;
+using Jiggswap.Application.OAuth.Dtos;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http;
@@ -10,11 +13,9 @@ namespace Jiggswap.Application.OAuth.Queries
 {
     public class AuthorizeFacebookUserQuery : IRequest<OAuthUserData>
     {
-        public string FacebookToken { get; set; }
+        public string Token { get; set; }
 
-        public string Email { get; set; }
-
-        public string Password { get; set; }
+        public string Username { get; set; }
     }
 
     public class AuthorizeFacebookUserQueryHandler : IRequestHandler<AuthorizeFacebookUserQuery, OAuthUserData>
@@ -75,14 +76,14 @@ namespace Jiggswap.Application.OAuth.Queries
         {
             await Task.Delay(1);
 
-            var isValidJiggswapToken = await ValidateJiggswapFacebookToken(request.FacebookToken);
+            var isValidJiggswapToken = await ValidateJiggswapFacebookToken(request.Token);
 
             if (!isValidJiggswapToken)
             {
                 return new OAuthUserData { IsValid = false };
             }
 
-            var userData = await GetFacebookUserData(request.FacebookToken);
+            var userData = await GetFacebookUserData(request.Token);
 
             return new OAuthUserData
             {

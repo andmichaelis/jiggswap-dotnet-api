@@ -19,6 +19,8 @@ namespace Jiggswap.Application.OAuth.Commands
     public class OAuthUserSigninCommand : IRequest<AuthorizedUserResponse>
     {
         public OAuthUserData OAuthData { get; set; }
+
+        public string Username { get; set; }
     }
 
     public class OAuthUserSigninCommandHandler : IRequestHandler<OAuthUserSigninCommand, AuthorizedUserResponse>
@@ -55,26 +57,9 @@ namespace Jiggswap.Application.OAuth.Commands
             return await conn.QuerySingleOrDefaultAsync<int?>("select id from users where email = @Email", new { email });
         }
 
-        private string GenerateUsername(OAuthUserData userData)
-        {
-            var rngProvider = new RNGCryptoServiceProvider();
-            var bytes = new byte[4];
-            rngProvider.GetBytes(bytes);
-            var randInt = BitConverter.ToInt32(bytes, 0);
-
-            var salt = randInt.ToString().PadRight(8, '0').Substring(1, 5);
-
-            var firstName = userData.FirstName ?? "JiggswapUser";
-            var lastInitial = !string.IsNullOrEmpty(userData.LastName) ? userData.LastName[0].ToString() : "";
-
-            return firstName + lastInitial + salt;
-        }
-
-        private async Task<int> CreateOrLinkJiggswapUser(OAuthUserData userData)
+        private async Task<int> CreateOrLinkJiggswapUser(OAuthUserData userData, string username)
         {
             using var conn = _db.GetConnection();
-
-            var username = GenerateUsername(userData);
 
             var email = userData.Email;
 
@@ -138,7 +123,7 @@ namespace Jiggswap.Application.OAuth.Commands
 
             if (!jiggswapUserId.HasValue)
             {
-                jiggswapUserId = await CreateOrLinkJiggswapUser(request.OAuthData);
+                jiggswapUserId = await CreateOrLinkJiggswapUser(request.OAuthData, request.Username);
 
                 _logger.LogInformation("Created user. New Id: {0}", jiggswapUserId);
             }

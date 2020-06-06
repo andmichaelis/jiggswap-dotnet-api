@@ -8,12 +8,17 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using static Google.Apis.Auth.GoogleJsonWebSignature;
 using Jiggswap.Application.OAuth.Dtos;
+using FluentValidation;
+using Jiggswap.Application.Common;
+using Dapper;
 
 namespace Jiggswap.Application.OAuth.Queries
 {
     public class AuthorizeGoogleUserQuery : IRequest<OAuthUserData>
     {
-        public string GoogleToken { get; set; }
+        public string Token { get; set; }
+
+        public string Username { get; set; }
     }
 
     public class AuthorizeGoogleUserQueryHandler : IRequestHandler<AuthorizeGoogleUserQuery, OAuthUserData>
@@ -33,7 +38,7 @@ namespace Jiggswap.Application.OAuth.Queries
 
             try
             {
-                validatedUser = await ValidateAsync(request.GoogleToken, new ValidationSettings
+                validatedUser = await ValidateAsync(request.Token, new ValidationSettings
                 {
                     Audience = new[] { _clientId }
                 });
