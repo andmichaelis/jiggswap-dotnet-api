@@ -50,6 +50,8 @@ namespace Jiggswap.Application.Trades.Queries
                     RP.tags RequestedPuzzleTags,
                     IP.image_id InitiatorPuzzleImageId,
                     RP.image_id RequestedPuzzleImageId,
+                    IPI.s3_url InitiatorPuzzleImageUrl,
+                    RPI.s3_url RequestedPuzzleImageUrl,
                     IP.num_pieces InitiatorPuzzleNumPieces,
                     RP.num_pieces RequestedPuzzleNumPieces,
                     IP.num_pieces_missing InitiatorPuzzleNumPiecesMissing,
@@ -67,7 +69,9 @@ namespace Jiggswap.Application.Trades.Queries
                     left outer join user_profiles IUP on IUP.user_id = T.initiator_user_id
                     left outer join user_profiles RUP on RUP.user_id = T.requested_user_id
                     join puzzles IP on IP.id = T.initiator_puzzle_id
-                    join puzzles RP on RP.id = T.requested_puzzle_id";
+                    join puzzles RP on RP.id = T.requested_puzzle_id
+                    left outer join images IPI on IP.image_id = IPI.id
+                    left outer join images RPI on RP.image_id = RPI.id";
 
         public async Task<TradesForUserResponse> Handle(GetTradesForUserQuery request, CancellationToken cancellationToken)
         {

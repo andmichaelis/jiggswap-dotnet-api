@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jiggswap.Migrations.Migrations
 {
-    [Migration(2020060416278)]
+    [Migration(202006041627)]
     public class AddUserOAuthData : Migration
     {
         public override void Up()

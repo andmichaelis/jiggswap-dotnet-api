@@ -13,7 +13,7 @@ namespace Jiggswap.RazorViewEngine.ViewModels.Trades
             {
                 OwnerUsername = tradeDetails.InitiatorUsername,
                 Brand = tradeDetails.InitiatorPuzzleBrand,
-                ImageUrl = $"{apiUrl}/image/{tradeDetails.InitiatorPuzzleImageId}",
+                ImageUrl = tradeDetails.InitiatorPuzzleImageUrl,
                 NumPieces = tradeDetails.InitiatorPuzzleNumPieces,
                 NumPiecesMissing = tradeDetails.InitiatorPuzzleNumPiecesMissing,
                 Title = tradeDetails.InitiatorPuzzleTitle,
@@ -25,7 +25,7 @@ namespace Jiggswap.RazorViewEngine.ViewModels.Trades
             {
                 OwnerUsername = tradeDetails.RequestedUsername,
                 Brand = tradeDetails.RequestedPuzzleBrand,
-                ImageUrl = $"{apiUrl}/image/{tradeDetails.RequestedPuzzleImageId}",
+                ImageUrl = tradeDetails.RequestedPuzzleImageUrl,
                 NumPieces = tradeDetails.RequestedPuzzleNumPieces,
                 NumPiecesMissing = tradeDetails.RequestedPuzzleNumPiecesMissing,
                 Title = tradeDetails.RequestedPuzzleTitle,

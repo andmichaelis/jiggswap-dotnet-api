@@ -34,7 +34,7 @@ namespace Jiggswap.Application.Puzzles.Queries
 
         public bool IsOwner { get; set; }
 
-        public int? ImageId { get; set; }
+        public string ImageCdnUrl { get; set; }
 
         public string TagValue { get; set; }
 
@@ -82,13 +82,15 @@ namespace Jiggswap.Application.Puzzles.Queries
                         P.Additional_Notes AdditionalNotes,
                         O.Public_Id OwnerUserId,
                         O.Username OwnerUsername,
-                        P.Image_Id ImageId,
                         P.Tags TagValue,
-                        P.is_in_trade IsInTrade
+                        P.is_in_trade IsInTrade,
+                        I.s3_url ImageCdnUrl
                     from
                         Puzzles P
                         join Users O
                             on O.Id = P.Owner_Id
+                        left outer join Images I
+                            on I.Id = P.Image_Id
                     where
                         P.Public_Id = @PuzzleId";
 

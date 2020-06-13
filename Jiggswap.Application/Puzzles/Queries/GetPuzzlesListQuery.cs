@@ -17,7 +17,7 @@ namespace Jiggswap.Application.Puzzles.Queries
 
         public string Brand { get; set; }
 
-        public int? ImageId { get; set; }
+        public string ImageCdnUrl { get; set; }
 
         [JsonIgnore]
         public string TagValue { get; set; }
@@ -58,12 +58,14 @@ namespace Jiggswap.Application.Puzzles.Queries
                     P.public_id as PuzzleId,
                     P.Title,
                     P.Brand,
-                    P.image_id ImageId,
+                    IMG.s3_url ImageCdnUrl,
                     P.tags TagValue,
                     P.num_pieces NumPieces,
                     P.num_pieces_missing NumPiecesMissing,
                     P.is_in_trade IsInTrade
-                from Puzzles P";
+                from Puzzles P
+                left outer join images IMG
+                on P.image_id = IMG.id";
 
             if (!string.IsNullOrEmpty(request.Owner))
             {

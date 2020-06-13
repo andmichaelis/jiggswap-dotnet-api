@@ -1,6 +1,7 @@
-﻿using Dapper;
+using Dapper;
 using ImageMagick;
 using Jiggswap.Application.Common;
+using Jiggswap.Application.Images;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -12,7 +13,7 @@ namespace Jiggswap.Application.Puzzles.Commands
 {
     public class CreatePuzzleImageCommand : IRequest<bool>
     {
-        public IFormFile ImageBlob { get; set; }
+        public int ImageId { get; set; }
 
         public Guid PuzzleId { get; set; }
     }
@@ -20,48 +21,17 @@ namespace Jiggswap.Application.Puzzles.Commands
     public class CreatePuzzleImageCommandHandler : IRequestHandler<CreatePuzzleImageCommand, bool>
     {
         private readonly IJiggswapDb _db;
+        private readonly IS3ImageHandler _s3ImageHandler;
 
-        public CreatePuzzleImageCommandHandler(IJiggswapDb db)
+        public CreatePuzzleImageCommandHandler(IJiggswapDb db, IS3ImageHandler s3ImageHandler)
         {
             _db = db;
-        }
-
-        private async Task<byte[]> GetImageDataFromBlob(IFormFile blob)
-        {
-            using var stream = new MemoryStream();
-
-            await blob.CopyToAsync(stream).ConfigureAwait(false);
-
-            return stream.ToArray();
-        }
-
-        private byte[] ShrinkImage(byte[] imageData)
-        {
-            using var image = new MagickImage(imageData);
-
-            image.Resize(600, 450);
-
-            return image.ToByteArray();
+            _s3ImageHandler = s3ImageHandler;
         }
 
         public async Task<bool> Handle(CreatePuzzleImageCommand request, CancellationToken cancellationToken)
         {
-            if (request.ImageBlob == null)
-            {
-                return true;
-            }
-
-            var imageData = await GetImageDataFromBlob(request.ImageBlob);
-
-            imageData = ShrinkImage(imageData);
-
             using var conn = _db.GetConnection();
-
-            var newImageId = await conn.QuerySingleAsync<int>("insert into images (image_data) values (@ImageData) returning id",
-                new
-                {
-                    ImageData = imageData
-                });
 
             var oldImageId = await conn.QuerySingleOrDefaultAsync<int?>(
                 "select image_id from puzzles where public_id = @PuzzleId", new
@@ -70,11 +40,11 @@ namespace Jiggswap.Application.Puzzles.Commands
                 });
 
             await conn.ExecuteAsync("update puzzles set image_id = @ImageId where public_id = @PuzzleId",
-                new
-                {
-                    ImageId = newImageId,
-                    request.PuzzleId
-                });
+            new
+            {
+                request.ImageId,
+                request.PuzzleId
+            });
 
             if (oldImageId != null)
             {
@@ -83,6 +53,10 @@ namespace Jiggswap.Application.Puzzles.Commands
                     {
                         OldImageId = oldImageId
                     });
+
+                var s3Filename = await conn.QuerySingleOrDefaultAsync<string>("select s3_filename from images where id = @OldImageId", new { oldImageId });
+
+                await _s3ImageHandler.RemoveImageFromS3(s3Filename);
             }
 
             return true;

@@ -72,6 +72,17 @@ namespace Jiggswap.DatabaseSeeder.Seeders
 
         private List<int> NumPiecesMissing = new List<int> { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 10, 30 };
 
+        private List<string> S3DummyImages = new List<string> { "dummy_images/1.png", "dummy_images/2.png", "dummy_images/3.png", "dummy_images/4.png", "dummy_images/5.png", "dummy_images/6.png", "dummy_images/7.png", "dummy_images/8.png" };
+
+        private int GetRandomS3Image()
+        {
+            var s3Filename = S3DummyImages.OrderBy(i => Guid.NewGuid()).First();
+
+            var url = "https://" + "dx30g48l30v8i.cloudfront.net" + "/" + s3Filename;
+
+            return _db.QuerySingle<int>("insert into images (image_data, s3_url, s3_filename) values (@ImageData, @S3Url, @S3Filename) returning id", new { ImageData = new byte[] { }, S3Url = url, S3Filename = s3Filename });
+        }
+
         private int CreateRandomImage()
         {
             var color = Color.FromArgb(_rand.Next(255), _rand.Next(255), _rand.Next(255));

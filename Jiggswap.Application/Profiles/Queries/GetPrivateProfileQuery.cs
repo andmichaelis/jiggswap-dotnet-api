@@ -32,9 +32,11 @@ namespace Jiggswap.Application.Profiles.Queries
                 City,
                 State,
                 Zip,
-                image_id ImageId
+                I.s3_url ImageCdnUrl
             from
                 user_profiles UP
+                left outer join Images I
+                on I.id = UP.image_id
             where UP.user_id = @UserId";
 
             return await conn.QuerySingleOrDefaultAsync<PrivateProfileDto>(sql, new

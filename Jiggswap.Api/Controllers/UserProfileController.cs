@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Jiggswap.Application.Common.Interfaces;
+using Jiggswap.Application.Images.Commands;
 using Jiggswap.Application.Profiles.Commands;
 using Jiggswap.Application.Profiles.Dtos;
 using Jiggswap.Application.Profiles.Queries;
@@ -42,10 +43,12 @@ namespace Jiggswap.Api.Controllers
 
             if (command.ImageBlob != null)
             {
+                var imageId = await Mediator.Send(new SaveImageCommand(command.ImageBlob));
+
                 _ = await Mediator.Send(new SaveAvatarCommand
                 {
                     ProfileId = profileId,
-                    ImageBlob = command.ImageBlob
+                    ImageId = imageId
                 }).ConfigureAwait(false);
             }
 

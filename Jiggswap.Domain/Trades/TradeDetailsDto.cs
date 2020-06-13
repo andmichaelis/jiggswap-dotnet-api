@@ -38,8 +38,8 @@ namespace Jiggswap.Domain.Trades
         public string InitiatorPuzzleTags { get; set; }
         public string RequestedPuzzleTags { get; set; }
 
-        public string InitiatorPuzzleImageId { get; set; }
-        public string RequestedPuzzleImageId { get; set; }
+        public string InitiatorPuzzleImageUrl { get; set; }
+        public string RequestedPuzzleImageUrl { get; set; }
 
         public string InitiatorPuzzleNumPieces { get; set; }
         public string RequestedPuzzleNumPieces { get; set; }

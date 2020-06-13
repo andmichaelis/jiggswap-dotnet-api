@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Jiggswap.Application.Common.Interfaces;
 using Jiggswap.Application.Emails;
+using Jiggswap.Application.Images.Commands;
 using Jiggswap.Application.Puzzles.Commands;
 using Jiggswap.Application.Puzzles.Queries;
 using MediatR;
@@ -45,17 +46,22 @@ namespace Jiggswap.Api.Controllers
         [HttpPost("")]
         public async Task<ActionResult<Guid>> CreatePuzzle([FromForm] CreatePuzzleCommand command)
         {
-            var result = await Mediator.Send(command).ConfigureAwait(false);
+            var puzzleId = await Mediator.Send(command).ConfigureAwait(false);
 
             _ = _emailer.SendAdminEmail("New Puzzle Created", $"User: {_currentUser.Username}. Puzzle: {command.Title}!");
 
-            _ = await Mediator.Send(new CreatePuzzleImageCommand
+            if (command.ImageBlob != null)
             {
-                PuzzleId = result,
-                ImageBlob = command.ImageBlob
-            }).ConfigureAwait(false);
+                var imageId = await Mediator.Send(new SaveImageCommand(command.ImageBlob));
 
-            return Ok(result);
+                _ = await Mediator.Send(new CreatePuzzleImageCommand
+                {
+                    PuzzleId = puzzleId,
+                    ImageId = imageId
+                });
+            }
+
+            return Ok(puzzleId);
         }
 
         [HttpPost("{id}")]
@@ -63,13 +69,18 @@ namespace Jiggswap.Api.Controllers
         {
             command.PuzzleId = id;
 
-            var result = await Mediator.Send(command).ConfigureAwait(false);
+            var puzzleId = await Mediator.Send(command).ConfigureAwait(false);
 
-            _ = await Mediator.Send(new CreatePuzzleImageCommand
+            if (command.ImageBlob != null)
             {
-                PuzzleId = result,
-                ImageBlob = command.ImageBlob
-            }).ConfigureAwait(false);
+                var imageId = await Mediator.Send(new SaveImageCommand(command.ImageBlob));
+
+                _ = await Mediator.Send(new CreatePuzzleImageCommand
+                {
+                    PuzzleId = puzzleId,
+                    ImageId = imageId
+                });
+            }
 
             return Ok(id);
         }

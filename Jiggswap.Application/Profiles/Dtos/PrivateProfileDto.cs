@@ -18,6 +18,6 @@ namespace Jiggswap.Application.Profiles.Dtos
 
         public string Zip { get; set; }
 
-        public int ImageId { get; set; }
+        public string ImageCdnUrl { get; set; }
     }
 }

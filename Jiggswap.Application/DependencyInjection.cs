@@ -8,6 +8,7 @@ using Jiggswap.Application.Common;
 using StackExchange.Redis;
 using Microsoft.Extensions.Configuration;
 using Jiggswap.Application.Emails;
+using Jiggswap.Application.Images;
 
 namespace Jiggswap.Application
 {
@@ -23,6 +24,8 @@ namespace Jiggswap.Application
             services.AddTransient<IJiggswapRedisConnection, JiggswapRedisConnection>();
 
             services.AddTransient<IJiggswapEmailer, JiggswapEmailer>();
+
+            services.AddTransient<IS3ImageHandler, S3ImageHandler>();
 
             return services;
         }
