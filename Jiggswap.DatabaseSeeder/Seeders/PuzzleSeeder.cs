@@ -107,7 +107,7 @@ namespace Jiggswap.DatabaseSeeder.Seeders
 
         internal SeededPuzzle CreateRandomPuzzleForUser(UserSeeder.SeededUser user)
         {
-            var imageId = CreateRandomImage();
+            var imageId = GetRandomS3Image();
 
             var puzz = new SeededPuzzle
             {
