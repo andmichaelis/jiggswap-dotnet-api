@@ -43,7 +43,7 @@ namespace Jiggswap.Api.Controllers
 
             if (command.ImageBlob != null)
             {
-                var imageId = await Mediator.Send(new SaveImageCommand(command.ImageBlob));
+                var imageId = await Mediator.Send(new SaveImageCommand(command.ImageBlob, 256, 256));
 
                 _ = await Mediator.Send(new SaveAvatarCommand
                 {

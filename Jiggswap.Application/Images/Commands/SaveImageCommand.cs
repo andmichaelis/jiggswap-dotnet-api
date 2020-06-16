@@ -22,10 +22,14 @@ namespace Jiggswap.Application.Images.Commands
     public class SaveImageCommand : IRequest<int>
     {
         public IFormFile Image { get; set; }
+        public int Width { get; }
+        public int Height { get; }
 
-        public SaveImageCommand(IFormFile image)
+        public SaveImageCommand(IFormFile image, int width, int height)
         {
             Image = image;
+            Width = width;
+            Height = height;
         }
     }
 
@@ -52,11 +56,10 @@ namespace Jiggswap.Application.Images.Commands
             return stream.ToArray();
         }
 
-        private byte[] ShrinkImage(byte[] imageData)
+        private byte[] ShrinkImage(byte[] imageData, int width, int height)
         {
             using var image = new MagickImage(imageData);
-
-            image.Resize(600, 450);
+            image.Resize(width, height);
 
             return image.ToByteArray();
         }
@@ -67,7 +70,7 @@ namespace Jiggswap.Application.Images.Commands
 
             var imageData = await GetImageDataFromBlob(request.Image);
 
-            var shrunkImage = ShrinkImage(imageData);
+            var shrunkImage = ShrinkImage(imageData, request.Width, request.Height);
 
             var s3Image = await _s3ImageHandler.SaveImageToS3(shrunkImage);
 

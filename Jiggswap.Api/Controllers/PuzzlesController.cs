@@ -52,7 +52,7 @@ namespace Jiggswap.Api.Controllers
 
             if (command.ImageBlob != null)
             {
-                var imageId = await Mediator.Send(new SaveImageCommand(command.ImageBlob));
+                var imageId = await Mediator.Send(new SaveImageCommand(command.ImageBlob, 900, 600));
 
                 _ = await Mediator.Send(new CreatePuzzleImageCommand
                 {
@@ -73,7 +73,7 @@ namespace Jiggswap.Api.Controllers
 
             if (command.ImageBlob != null)
             {
-                var imageId = await Mediator.Send(new SaveImageCommand(command.ImageBlob));
+                var imageId = await Mediator.Send(new SaveImageCommand(command.ImageBlob, 900, 600));
 
                 _ = await Mediator.Send(new CreatePuzzleImageCommand
                 {
