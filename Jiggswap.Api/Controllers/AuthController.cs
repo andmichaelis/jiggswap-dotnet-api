@@ -37,12 +37,9 @@ namespace JiggswapApi.Controllers
         {
             var isEmail = request.UsernameOrEmail.Contains('@');
 
-            var username = request.UsernameOrEmail;
-
-            if (isEmail)
-            {
-                username = await Mediator.Send(new GetUsernameFromEmailQuery(request.UsernameOrEmail));
-            }
+            string username = isEmail
+                ? await Mediator.Send(new GetUsernameFromEmailQuery(request.UsernameOrEmail))
+                : await Mediator.Send(new GetUsernameFromUsernameQuery(request.UsernameOrEmail));
 
             var result = new AuthorizedUserResponse { Username = username };
 
