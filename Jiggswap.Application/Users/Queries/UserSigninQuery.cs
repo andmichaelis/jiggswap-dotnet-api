@@ -36,8 +36,8 @@ namespace Jiggswap.Application.Users.Queries
             using var conn = _db.GetConnection();
 
             var existingHash = await conn.QuerySingleOrDefaultAsync<string>(
-                "select password_hash from users where username = @UsernameOrEmail or email = @UsernameOrEmail",
-            new { query.UsernameOrEmail }).ConfigureAwait(false);
+                "select password_hash from users where lower(username) = @UsernameOrEmail or lower(email) = @UsernameOrEmail",
+            new { UsernameOrEmail = query.UsernameOrEmail.ToLower() }).ConfigureAwait(false);
 
             if (string.IsNullOrEmpty(existingHash))
             {

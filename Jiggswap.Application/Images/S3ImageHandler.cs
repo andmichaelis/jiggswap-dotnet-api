@@ -34,6 +34,7 @@ namespace Jiggswap.Application.Images
         private readonly AmazonS3Client _s3Client;
 
         private readonly string _s3CdnBaseUrl;
+        private readonly string _s3ImageBasePath;
 
         public S3ImageHandler(IConfiguration config, ILogger<S3ImageHandler> logger)
         {
@@ -41,13 +42,14 @@ namespace Jiggswap.Application.Images
 
             _s3Client = new AmazonS3Client(config["AWS:AccessKeyId"], config["AWS:SecretKey"], Amazon.RegionEndpoint.USEast2);
             _s3CdnBaseUrl = config["AWS:CdnBaseUrl"];
+            _s3ImageBasePath = config["AWS:ImageBaseDirectory"];
         }
 
         public async Task<S3Image> SaveImageToS3(byte[] imageData)
         {
             var s3TransferUtility = new TransferUtility(_s3Client);
 
-            var s3FileName = $"images/" + Path.GetRandomFileName().Replace(".", "") + ".png";
+            var s3FileName = _s3ImageBasePath + "/" + Path.GetRandomFileName().Replace(".", "") + ".png";
 
             using (var stream = new MemoryStream(imageData))
             {

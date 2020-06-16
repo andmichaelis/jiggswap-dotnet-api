@@ -32,7 +32,7 @@ namespace Jiggswap.Application.Users.Queries
         {
             using var conn = _db.GetConnection();
 
-            return await conn.QuerySingleOrDefaultAsync<string>("select username from users where email = @Email", new { request.Email });
+            return await conn.QuerySingleOrDefaultAsync<string>("select username from users where lower(email) = @Email", new { Email = request.Email.ToLower() });
         }
     }
 }

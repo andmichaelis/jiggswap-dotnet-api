@@ -48,15 +48,15 @@ namespace Jiggswap.Application.Puzzles.Commands
 
             if (oldImageId != null)
             {
+                var s3Filename = await conn.QuerySingleOrDefaultAsync<string>("select s3_filename from images where id = @oldImageId", new { oldImageId });
+
+                await _s3ImageHandler.RemoveImageFromS3(s3Filename);
+
                 await conn.ExecuteAsync("delete from images where id = @OldImageId",
                     new
                     {
                         OldImageId = oldImageId
                     });
-
-                var s3Filename = await conn.QuerySingleOrDefaultAsync<string>("select s3_filename from images where id = @OldImageId", new { oldImageId });
-
-                await _s3ImageHandler.RemoveImageFromS3(s3Filename);
             }
 
             return true;
