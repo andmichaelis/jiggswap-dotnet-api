@@ -37,7 +37,7 @@ namespace Jiggswap.Application.Contact.Commands
 
         private bool BeValidEmail(string email)
         {
-            if (email.Length == 0)
+            if (email == null || email.Length == 0)
             {
                 return true;
             }
@@ -67,7 +67,7 @@ namespace Jiggswap.Application.Contact.Commands
 
         public async Task<bool> Handle(SubmitContactCommand request, CancellationToken cancellationToken)
         {
-            await _emailer.SendContactEmail(request.Name, request.Email, request.Comment);
+            await _emailer.SendContactEmail(request.Name ?? "(name not provided)", request.Email ?? "noemailprovided@jiggswap.com", request.Comment);
 
             return true;
         }
