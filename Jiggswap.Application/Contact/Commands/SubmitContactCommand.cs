@@ -24,11 +24,10 @@ namespace Jiggswap.Application.Contact.Commands
         public SubmitContactCommandValidator()
         {
             RuleFor(v => v.Name)
-                .NotEmpty();
+                .MaximumLength(50);
 
             RuleFor(v => v.Email)
                 .Cascade(CascadeMode.StopOnFirstFailure)
-                .NotEmpty()
                 .Must(BeValidEmail)
                 .WithMessage("'Email' does not appear to be a valid email format.");
 
@@ -38,6 +37,11 @@ namespace Jiggswap.Application.Contact.Commands
 
         private bool BeValidEmail(string email)
         {
+            if (email.Length == 0)
+            {
+                return true;
+            }
+
             try
             {
                 var m = new MailAddress(email);
