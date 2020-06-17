@@ -31,6 +31,13 @@ namespace JiggswapApi.Controllers
             _emailer = emailer;
         }
 
+        [HttpGet("opened")]
+        [AllowAnonymous]
+        public ActionResult GetAuthOpened()
+        {
+            return Ok();
+        }
+
         [HttpPost("authorize/jiggswap")]
         [AllowAnonymous]
         public async Task<ActionResult<AuthorizedUserResponseWithToken>> AuthorizeJiggswap(UserSigninQuery request)
