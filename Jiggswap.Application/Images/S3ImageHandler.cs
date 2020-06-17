@@ -47,13 +47,21 @@ namespace Jiggswap.Application.Images
 
         public async Task<S3Image> SaveImageToS3(byte[] imageData)
         {
-            var s3TransferUtility = new TransferUtility(_s3Client);
-
             var s3FileName = _s3ImageBasePath + "/" + Path.GetRandomFileName().Replace(".", "") + ".png";
 
             using (var stream = new MemoryStream(imageData))
             {
-                await s3TransferUtility.UploadAsync(stream, "jiggswap", s3FileName);
+                var putRequest = new PutObjectRequest
+                {
+                    InputStream = stream,
+                    Key = s3FileName,
+                    BucketName = "jiggswap",
+                    ContentType = "image/png"
+                };
+
+                putRequest.Metadata.Add("cache-control", "public, max-age: 25920000");
+
+                await _s3Client.PutObjectAsync(putRequest);
             }
 
             return new S3Image
