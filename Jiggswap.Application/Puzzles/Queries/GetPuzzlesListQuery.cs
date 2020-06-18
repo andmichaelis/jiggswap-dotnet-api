@@ -58,7 +58,7 @@ namespace Jiggswap.Application.Puzzles.Queries
                     P.public_id as PuzzleId,
                     P.Title,
                     P.Brand,
-                    IMG.s3_url ImageCdnUrl,
+                    IMG.image_url ImageCdnUrl,
                     P.tags TagValue,
                     P.num_pieces NumPieces,
                     P.num_pieces_missing NumPiecesMissing,

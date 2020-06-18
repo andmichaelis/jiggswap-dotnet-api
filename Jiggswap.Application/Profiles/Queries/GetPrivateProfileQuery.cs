@@ -32,7 +32,7 @@ namespace Jiggswap.Application.Profiles.Queries
                 City,
                 State,
                 Zip,
-                I.s3_url ImageCdnUrl
+                I.image_url ImageCdnUrl
             from
                 user_profiles UP
                 left outer join Images I

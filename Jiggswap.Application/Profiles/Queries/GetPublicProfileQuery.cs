@@ -55,7 +55,7 @@ namespace Jiggswap.Application.Profiles.Queries
                     UP.City,
                     UP.State,
                     UP.Zip,
-                    I.s3_url ImageCdnUrl
+                    I.image_url ImageCdnUrl
                 from
                     user_profiles UP
                     join users U

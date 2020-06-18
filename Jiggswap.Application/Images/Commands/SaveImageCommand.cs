@@ -74,7 +74,7 @@ namespace Jiggswap.Application.Images.Commands
 
             var s3Image = await _s3ImageHandler.SaveImageToS3(shrunkImage);
 
-            return await conn.QuerySingleAsync<int>("insert into images(s3_url, s3_filename) values (@S3Url, @S3FileName) returning id", new
+            return await conn.QuerySingleAsync<int>("insert into images(image_url, s3_filename) values (@S3Url, @S3FileName) returning id", new
             {
                 S3Url = s3Image.FileUrl,
                 S3FileName = s3Image.Filename

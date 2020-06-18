@@ -84,7 +84,7 @@ namespace Jiggswap.Application.Puzzles.Queries
                         O.Username OwnerUsername,
                         P.Tags TagValue,
                         P.is_in_trade IsInTrade,
-                        I.s3_url ImageCdnUrl
+                        I.image_url ImageCdnUrl
                     from
                         Puzzles P
                         join Users O
