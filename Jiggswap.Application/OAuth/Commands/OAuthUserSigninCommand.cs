@@ -79,19 +79,26 @@ namespace Jiggswap.Application.OAuth.Commands
                     userData.Email,
                     PasswordHash = ""
                 });
-            }
 
-            await conn.ExecuteAsync(@"
+                await conn.ExecuteAsync(@"
                 insert into user_profiles
                 ( user_id, firstname, lastname )
                 values
                 ( @UserId, @FirstName, @LastName )",
-                new
+                    new
+                    {
+                        UserId = userId.Value,
+                        userData.FirstName,
+                        userData.LastName
+                    });
+
+                if (!string.IsNullOrEmpty(userData.AvatarUrl))
                 {
-                    UserId = userId.Value,
-                    userData.FirstName,
-                    userData.LastName
-                });
+                    var imageId = await conn.QuerySingleAsync<int>("insert into images (image_url) values (@AvatarUrl) returning id", new { userData.AvatarUrl });
+
+                    await conn.ExecuteAsync("update user_profiles set image_id = @ImageId where user_id = @UserId", new { imageId, userId });
+                }
+            }
 
             await conn.ExecuteAsync(@"
                 insert into user_oauth_data
