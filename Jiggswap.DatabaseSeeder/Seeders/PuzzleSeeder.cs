@@ -78,7 +78,7 @@ namespace Jiggswap.DatabaseSeeder.Seeders
         {
             var s3Filename = S3DummyImages.OrderBy(i => Guid.NewGuid()).First();
 
-            var url = "https://" + "dx30g48l30v8i.cloudfront.net" + "/" + s3Filename;
+            var url = "https://" + "cdn.jiggswap.com" + "/" + s3Filename;
 
             return _db.QuerySingle<int>("insert into images (image_data, image_url, s3_filename) values (@ImageData, @S3Url, @S3Filename) returning id", new { ImageData = new byte[] { }, S3Url = url, S3Filename = s3Filename });
         }
