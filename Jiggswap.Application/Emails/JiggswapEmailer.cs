@@ -166,7 +166,6 @@ namespace Jiggswap.Application.Emails
             {
                 Subject = $"Jiggswap - Comment from {name}",
                 ToEmail = new EmailAddress("comments@jiggswap.com"),
-                ReplyTo = new EmailAddress(email)
             });
         }
 
