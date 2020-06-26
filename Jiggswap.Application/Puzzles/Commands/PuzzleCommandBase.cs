@@ -20,7 +20,7 @@ namespace Jiggswap.Application.Puzzles.Commands
 
         public int NumPieces { get; set; }
 
-        public int NumPiecesMissing { get; set; }
+        public string NumPiecesMissing { get; set; }
 
         public string AdditionalNotes { get; set; }
 
@@ -44,12 +44,12 @@ namespace Jiggswap.Application.Puzzles.Commands
                 .MaximumLength(200);
 
             RuleFor(v => v.NumPieces)
-                .GreaterThan(0);
+                .GreaterThan(0)
+                .WithMessage("'# of Pieces' must be a positive number.");
 
             RuleFor(v => v.NumPiecesMissing)
-                .GreaterThanOrEqualTo(0)
-                .LessThan(v => v.NumPieces)
-                .WithMessage(v => $"Must be lower than # Pieces ({v.NumPieces})");
+                .NotEmpty()
+                .WithMessage("'# Pieces Missing' is required.");
 
             RuleFor(v => v.Tags)
                 .MaximumLength(310); // (10 tags * 30 chars) + 10 delimiters

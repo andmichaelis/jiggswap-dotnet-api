@@ -24,7 +24,7 @@ namespace Jiggswap.Application.Puzzles.Queries
 
         public int NumPieces { get; set; }
 
-        public int NumPiecesMissing { get; set; }
+        public string NumPiecesMissing { get; set; }
 
         public string AdditionalNotes { get; set; }
 
